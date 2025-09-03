@@ -18,9 +18,13 @@ public class SwerveDriveCommand extends Command {
         addRequirements(swerveSub);
     }
 
+    double lastX = 0;
+    double lastY = 0;
+    double lastRot = 0;
+
     @Override
     public void initialize() {
-
+        swerveSub.drive(new ChassisSpeeds(0, 0, 0));
     }
 
     @Override
@@ -29,7 +33,12 @@ public class SwerveDriveCommand extends Command {
         double y = MathUtil.applyDeadband(xboxController.getLeftX(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
         double rotation = MathUtil.applyDeadband(xboxController.getRightX(), 0.1) * 10;
 
-        swerveSub.drive(new ChassisSpeeds(x, y, rotation));
+        if (lastX != x || lastY != y || lastRot != rotation) {
+            swerveSub.drive(new ChassisSpeeds(x, y, rotation));
+            lastX = x;
+            lastY = y;
+            lastRot = rotation;
+        }
     }
 
     @Override

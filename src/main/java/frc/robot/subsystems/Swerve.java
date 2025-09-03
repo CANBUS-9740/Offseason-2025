@@ -14,17 +14,22 @@ import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
 public class Swerve extends SubsystemBase {
-    private final SwerveDrive swerveDrive;
+    public final SwerveDrive swerveDrive;
 
     public Swerve() {
         SwerveDriveTelemetry.verbosity = SwerveDriveTelemetry.TelemetryVerbosity.HIGH;
-        final double maximumSpeed = 5;
         File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
         try {
-            swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
+            swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        swerveDrive.setHeadingCorrection(false);
+        swerveDrive.setCosineCompensator(false);
+        swerveDrive.setAngularVelocityCompensation(false, false, 0);
+        swerveDrive.setModuleEncoderAutoSynchronize(true, 1);
+        swerveDrive.synchronizeModuleEncoders();
     }
 
     public void driveFieldRelative(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX) {
@@ -37,5 +42,9 @@ public class Swerve extends SubsystemBase {
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         swerveDrive.drive(chassisSpeeds);
+    }
+
+    public void stop() {
+
     }
 }

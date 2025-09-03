@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-
+        swerveSystem.swerveDrive.getModules()[3].setAngle(90);
     }
 
     @Override
