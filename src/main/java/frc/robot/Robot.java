@@ -1,13 +1,28 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShootCommand;
+import frc.robot.subsystems.Shooter;
 
 public class Robot extends TimedRobot {
+    private XboxController controller;
+    private Shooter shooter;
 
     @Override
     public void robotInit() {
+        shooter = new Shooter();
+        controller = new XboxController(0);
 
+        //init for intake command that activates on an A button press
+        JoystickButton aButton = new JoystickButton(controller,XboxController.Button.kA.value);
+        aButton.onTrue(new IntakeCommand(shooter));
+        //init for shoot command that activates on a B button press
+        JoystickButton bButton = new JoystickButton(controller,XboxController.Button.kB.value);
+        aButton.onTrue(new ShootCommand(shooter));
     }
 
     @Override
