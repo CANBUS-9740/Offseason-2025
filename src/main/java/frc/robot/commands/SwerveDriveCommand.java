@@ -10,6 +10,9 @@ import frc.robot.subsystems.Swerve;
 public class SwerveDriveCommand extends Command {
     private Swerve swerveSub;
     private XboxController xboxController;
+    double lastX = 0;
+    double lastY = 0;
+    double lastRot = 0;
 
     public SwerveDriveCommand(Swerve swerveSub, XboxController xboxController) {
         this.swerveSub = swerveSub;
@@ -17,10 +20,6 @@ public class SwerveDriveCommand extends Command {
 
         addRequirements(swerveSub);
     }
-
-    double lastX = 0;
-    double lastY = 0;
-    double lastRot = 0;
 
     @Override
     public void initialize() {
@@ -32,13 +31,13 @@ public class SwerveDriveCommand extends Command {
         double x = MathUtil.applyDeadband(xboxController.getLeftY(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
         double y = MathUtil.applyDeadband(xboxController.getLeftX(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
         double rotation = MathUtil.applyDeadband(xboxController.getRightX(), 0.1) * 10;
-
-        if (lastX != x || lastY != y || lastRot != rotation) {
+        swerveSub.drive(new ChassisSpeeds(x, y, rotation));
+        /*if (lastX != x || lastY != y || lastRot != rotation) {
             swerveSub.drive(new ChassisSpeeds(x, y, rotation));
             lastX = x;
             lastY = y;
             lastRot = rotation;
-        }
+        }*/
     }
 
     @Override
