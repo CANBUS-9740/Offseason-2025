@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -79,7 +80,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-
+        swerveSystem.drive(new ChassisSpeeds(0, 0, 5));
     }
 
     @Override

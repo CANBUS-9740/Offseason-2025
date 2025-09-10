@@ -28,9 +28,9 @@ public class SwerveDriveCommand extends Command {
 
     @Override
     public void execute() {
-        double x = MathUtil.applyDeadband(xboxController.getLeftY(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
-        double y = MathUtil.applyDeadband(xboxController.getLeftX(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
-        double rotation = MathUtil.applyDeadband(xboxController.getRightX(), 0.1) * 10;
+        double x = -MathUtil.applyDeadband(xboxController.getLeftY(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
+        double y = -MathUtil.applyDeadband(xboxController.getLeftX(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
+        double rotation = -MathUtil.applyDeadband(xboxController.getRightX(), 0.1) * 10;
         swerveSub.drive(new ChassisSpeeds(x, y, rotation));
         /*if (lastX != x || lastY != y || lastRot != rotation) {
             swerveSub.drive(new ChassisSpeeds(x, y, rotation));

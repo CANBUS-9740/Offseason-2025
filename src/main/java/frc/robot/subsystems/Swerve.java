@@ -29,7 +29,7 @@ public class Swerve extends SubsystemBase {
         swerveDrive.setCosineCompensator(false);
         swerveDrive.setAngularVelocityCompensation(false, false, 0);
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1);
-        //swerveDrive.synchronizeModuleEncoders();
+        swerveDrive.synchronizeModuleEncoders();
     }
 
     public void driveFieldRelative(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX) {
