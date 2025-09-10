@@ -1,44 +1,45 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Elevator;
 
 public class Setheight extends Command {
-    private double height;
+    private double height,processvariable,output;
     private final Elevator elevator;
-    private double NR;//Number of Revolutions
-    private double CH;//Current Height
-    private double pow;
+
+    //PID values
+    private static final double KP = 0.05;
+    private static final double KI = 0;
+    private static final double KD = 0.1;
+    private final PIDController controller;
+
 
     public Setheight(Elevator elevator, double height) {
         this.elevator = elevator;
-        this.height = height;
+        this.controller = new PIDController(KP, KI, KD);
+        this.controller.setSetpoint(height);
+        addRequirements(elevator);
+
     }
 
     @Override
     public void initialize() {
-        NR = this.height / RobotMap.CIRCUMFERENCE;
-        CH = RobotMap.CIRCUMFERENCE * elevator.getmotorPosition();
-        if (height < CH) {
-            elevator.move(0.3);
-        } else if (height > NR) {
-            elevator.move(-0.3);
-        } else {
-            elevator.stop();
-        }
+        controller.reset();
+
     }
 
     @Override
     public void execute() {
-        if (CH > this.height + 10) {
-            initialize();
-        }
+        processvariable= elevator.getDistancePassedMeters();
+        output = controller.calculate(processvariable);
+        elevator.move(output);
     }
 
     @Override
     public boolean isFinished() {
-        return CH > this.height - 10 && CH < this.height + 10;
+        return false;
     }
 
     @Override

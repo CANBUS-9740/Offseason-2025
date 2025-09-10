@@ -12,7 +12,9 @@ public class Elevator extends SubsystemBase {
     private final SparkMax rightMotor;
     private final DigitalInput Limitswitch;
     private RelativeEncoder encoder;
-    private boolean ispos=false;
+
+
+    private double outputKS=0.2;
 
     public Elevator() {
         leftMotor = new SparkMax(RobotMap.LEFTM, SparkLowLevel.MotorType.kBrushless);
@@ -21,22 +23,26 @@ public class Elevator extends SubsystemBase {
         encoder = leftMotor.getEncoder();
 
     }
+
     public void move(double pow) {
-        leftMotor.set(pow);
-        rightMotor.set(-pow);
+        leftMotor.set(pow+outputKS);
+        rightMotor.set(-pow-outputKS);
     }
+
     public void stop() {
         leftMotor.stopMotor();
         rightMotor.stopMotor();
     }
-    public double getmotorPosition() {
-        return encoder.getPosition();
-    }
-    public void inposition(boolean isit) {
-        ispos = isit;
 
+    public double getDistancePassedMeters() {
+        return encoder.getPosition()*RobotMap.CIRCUMFERENCE;
     }
-    public boolean getispos() {
-        return ispos;
+
+    public boolean getLimitSwitch() {
+        return Limitswitch.get();
     }
+    public void ResetEncoder(){
+        encoder.setPosition(0);
+    }
+
 }

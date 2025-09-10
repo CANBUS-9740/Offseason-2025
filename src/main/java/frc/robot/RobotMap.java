@@ -4,8 +4,8 @@ public class RobotMap {
     public static final int LEFTM = 0;
     public static final int RIGHTM = 1;
     public static final int LIMITER = 2;
-    public static final double CIRCUMFERENCE = 10.0;
-    public static final double ELEVATO_MAX = 100.0;
+    public static final double CIRCUMFERENCE = 0.1;
+    public static final double ELEVATOR_MAX = 10.0;
 
     private RobotMap() {
     }
