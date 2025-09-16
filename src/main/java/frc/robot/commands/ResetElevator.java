@@ -1,27 +1,27 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.ElevatorSystem;
 
 public class ResetElevator extends Command {
-    private final Elevator elevator;
-    public ResetElevator(Elevator elevator) {
-        this.elevator = elevator;
-        addRequirements(elevator);
+    private final ElevatorSystem elevatorSystem;
+    public ResetElevator(ElevatorSystem elevatorSystem) {
+        this.elevatorSystem = elevatorSystem;
+        addRequirements(elevatorSystem);
     }
     @Override
     public void initialize() {
-        elevator.move(-0.2);
+        elevatorSystem.move(-0.2);
     }
     @Override
     public boolean isFinished(){
-        return elevator.getLimitSwitch();
+        return elevatorSystem.getLimitSwitch();
     }
 
     @Override
     public void end(boolean interrupted) {
-        elevator.stop();
-        elevator.ResetEncoder();
+        elevatorSystem.stop();
+        elevatorSystem.ResetEncoder();
     }
 
 }
