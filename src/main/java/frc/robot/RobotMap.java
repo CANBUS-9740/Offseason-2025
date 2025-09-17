@@ -11,7 +11,7 @@ public class RobotMap {
     public static final double KP = 0.05;
     public static final double KI = 0;
     public static final double KD = 0.1;
-    public static final double ELEVATOR_FF=0.2;
+    public static final double ELEVATOR_FF = 0.2;
 
     private RobotMap() {
     }

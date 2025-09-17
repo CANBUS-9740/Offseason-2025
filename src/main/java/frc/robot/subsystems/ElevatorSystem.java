@@ -41,7 +41,7 @@ public class ElevatorSystem extends SubsystemBase {
         SparkMaxConfig configright = new SparkMaxConfig();
         configright.follow(leftMotor,true);
 
-
+        rightMotor.configure(configright, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     }
 
@@ -49,27 +49,27 @@ public class ElevatorSystem extends SubsystemBase {
 
 
     public void move(double pow) {
-        leftMotor.set(pow+RobotMap.ELEVATOR_FF);
+        leftMotor.set(pow + RobotMap.ELEVATOR_FF);
     }
 
     public void stop() {
         leftMotor.stopMotor();
-
     }
 
-    public double getDistancePassedMeters() {
-        return encoder.getPosition()*RobotMap.CIRCUMFERENCE;
+    public double getPositionMeters() {
+        return encoder.getPosition() * RobotMap.CIRCUMFERENCE;
     }
 
     public boolean getLimitSwitch() {
         return Limitswitch.get();
     }
+
     public void ResetEncoder(){
         encoder.setPosition(0);
     }
 
-    public void movetosetpointSPARK(double setpoint){
-        sparkPIDcontroller.setReference(setpoint, SparkBase.ControlType.kPosition);
+    public void moveToSetPointSpark(double setpoint){
+        sparkPIDcontroller.setReference(setpoint / RobotMap.CIRCUMFERENCE, SparkBase.ControlType.kPosition);
 
     }
 

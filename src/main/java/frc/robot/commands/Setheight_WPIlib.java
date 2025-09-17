@@ -32,7 +32,7 @@ public class Setheight_WPIlib extends Command {
 
     @Override
     public void execute() {
-        processvariable= elevatorSystem.getDistancePassedMeters();
+        processvariable= elevatorSystem.getPositionMeters();
         output = controller.calculate(processvariable);
         elevatorSystem.move(output);
     }
