@@ -18,7 +18,7 @@ public class ShootCommand extends Command {
 
     @Override
     public void execute() {
-        shooterSystem.MotorMove(0.5);
+        shooterSystem.motorMove(0.5);
     }
 
     @Override

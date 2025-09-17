@@ -9,7 +9,7 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.ShooterSystem;
 
 public class Robot extends TimedRobot {
-    private  XboxController controller;
+    private XboxController controller;
     private ShooterSystem shooterSystem;
 
     @Override
