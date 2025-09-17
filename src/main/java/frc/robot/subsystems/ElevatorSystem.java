@@ -18,22 +18,23 @@ public class ElevatorSystem extends SubsystemBase {
 
 
     public ElevatorSystem() {
-        motorMaster = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
-        motorFollow = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
+        motorMaster = new SparkMax(RobotMap.ELEVATOR_MASTER_MOTOR, SparkLowLevel.MotorType.kBrushless);
+        motorFollow = new SparkMax(RobotMap.ELEVATOR_FOLLOW_MOTOR, SparkLowLevel.MotorType.kBrushless);
         encoder = motorMaster.getEncoder();
 
         SparkMaxConfig configMaster = new SparkMaxConfig();
         configMaster.closedLoop
                 .p(RobotMap.ELEVATOR_P)
                 .i(RobotMap.ELEVATOR_I)
-                .d(RobotMap.ELEVATOR_D);
+                .d(RobotMap.ELEVATOR_D)
+                .velocityFF(RobotMap.ELEVATOR_FF);
         configMaster.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
         configMaster.encoder.positionConversionFactor(1 / RobotMap.GEAR_RATIO_ELEVATOR);
-        motorMaster.configure(configMaster, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+        motorMaster.configure(configMaster, SparkBase.ResetMode.kResetSafeParameters , SparkBase.PersistMode.kNoPersistParameters);
 
         SparkMaxConfig configFollow = new SparkMaxConfig();
         configFollow.follow(motorMaster).inverted(true);
-        motorFollow.configure(configFollow, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+        motorFollow.configure(configFollow, SparkBase.ResetMode.kResetSafeParameters , SparkBase.PersistMode.kNoPersistParameters);
     }
 
     public void stop() {
