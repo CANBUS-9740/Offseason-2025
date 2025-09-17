@@ -22,9 +22,9 @@ public class ElevatorSystem extends SubsystemBase {
 
 
     public ElevatorSystem() {
-        leftMotor = new SparkMax(RobotMap.LEFTMOTORID, SparkLowLevel.MotorType.kBrushless);
-        rightMotor = new SparkMax(RobotMap.RIGHTMOTORID, SparkLowLevel.MotorType.kBrushless);
-        Limitswitch = new DigitalInput(RobotMap.ELEVATORLIMITSWITCH);
+        leftMotor = new SparkMax(RobotMap.LEFT_MOTORID, SparkLowLevel.MotorType.kBrushless);
+        rightMotor = new SparkMax(RobotMap.RIGHT_MOTORID, SparkLowLevel.MotorType.kBrushless);
+        Limitswitch = new DigitalInput(RobotMap.ELEVATOR_LIMITSWITCH);
         encoder = leftMotor.getEncoder();
 
         sparkPIDcontroller = leftMotor.getClosedLoopController();
@@ -33,6 +33,7 @@ public class ElevatorSystem extends SubsystemBase {
                 .p(RobotMap.KP)
                 .i(RobotMap.KI)
                 .d(RobotMap.KD)
+                .velocityFF(RobotMap.ELEVATOR_FF)
                 .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
 
 
@@ -48,7 +49,7 @@ public class ElevatorSystem extends SubsystemBase {
 
 
     public void move(double pow) {
-        leftMotor.set(pow+RobotMap.PIDOUTPUTKS);
+        leftMotor.set(pow+RobotMap.ELEVATOR_FF);
     }
 
     public void stop() {
@@ -69,7 +70,7 @@ public class ElevatorSystem extends SubsystemBase {
 
     public void movetosetpointSPARK(double setpoint){
         sparkPIDcontroller.setReference(setpoint, SparkBase.ControlType.kPosition);
-        move(RobotMap.PIDOUTPUTKS);
+
     }
 
 
