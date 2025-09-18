@@ -33,7 +33,7 @@ public class Swerve extends SubsystemBase {
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1);
         swerveDrive.synchronizeModuleEncoders();
 
-        swerveDrive.resetOdometry(new Pose2d(new Translation2d(4, 4), new Rotation2d(0)));
+        swerveDrive.resetOdometry(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
     }
 
     public void driveFieldRelative(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX) {
