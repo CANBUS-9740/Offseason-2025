@@ -7,7 +7,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-
+        LimelightHelpers.PoseEstimate pose = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-canbus");
     }
 
     @Override
