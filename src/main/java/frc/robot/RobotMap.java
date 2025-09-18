@@ -6,6 +6,7 @@ public class RobotMap {
     public static final int ELEVATORLIMITSWITCH = 2;
     public static final double CIRCUMFERENCE = 0.1;
     public static final double ELEVATOR_MAX = 10.0;
+    public static final double ELEVATOR_RESET_SPEED=-0.4;
 
     //PID VALUES
     public static final double KP = 0.05;

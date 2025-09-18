@@ -34,11 +34,13 @@ public class ElevatorSystem extends SubsystemBase {
                 .i(RobotMap.KI)
                 .d(RobotMap.KD)
                 .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
+        leftMotor.configure(config,SparkBase.ResetMode.kResetSafeParameters,SparkBase.PersistMode.kPersistParameters);
 
 
 
         SparkMaxConfig configright = new SparkMaxConfig();
         configright.follow(leftMotor,true);
+        rightMotor.configure(configright,SparkBase.ResetMode.kResetSafeParameters,SparkBase.PersistMode.kPersistParameters);
 
 
 

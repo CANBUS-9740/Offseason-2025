@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotMap;
 import frc.robot.subsystems.ElevatorSystem;
 
 public class ResetElevator extends Command {
@@ -11,7 +12,7 @@ public class ResetElevator extends Command {
     }
     @Override
     public void initialize() {
-        elevatorSystem.move(-0.2);
+        elevatorSystem.move(RobotMap.ELEVATOR_RESET_SPEED);
     }
     @Override
     public boolean isFinished(){
