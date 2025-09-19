@@ -43,7 +43,6 @@ public class ElevatorSystem extends SubsystemBase {
 
     public double getHeight(){
         return encoder.getPosition() * RobotMap.CIRCUMFERNCE_MM;
-        //המשך חישוב?
     }
 
     public void moveToHeight(double targetHeight){
