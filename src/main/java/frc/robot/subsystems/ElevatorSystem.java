@@ -14,18 +14,15 @@ import frc.robot.RobotMap;
 public class ElevatorSystem extends SubsystemBase {
     private final SparkMax leftMotor;
     private final SparkMax rightMotor;
-    private final DigitalInput Limitswitch;
-    private final RelativeEncoder encoder;
+    private final DigitalInput limitswitch;
+    private final RelativeEncoder leftEncoder;
     public final SparkClosedLoopController sparkPIDcontroller;
-
-
-
 
     public ElevatorSystem() {
         leftMotor = new SparkMax(RobotMap.LEFT_MOTORID, SparkLowLevel.MotorType.kBrushless);
         rightMotor = new SparkMax(RobotMap.RIGHT_MOTORID, SparkLowLevel.MotorType.kBrushless);
-        Limitswitch = new DigitalInput(RobotMap.ELEVATOR_LIMITSWITCH);
-        encoder = leftMotor.getEncoder();
+        limitswitch = new DigitalInput(RobotMap.ELEVATOR_LIMITSWITCH);
+        leftEncoder = leftMotor.getEncoder();
 
         sparkPIDcontroller = leftMotor.getClosedLoopController();
         SparkMaxConfig config = new SparkMaxConfig();
@@ -37,21 +34,16 @@ public class ElevatorSystem extends SubsystemBase {
                 .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
         leftMotor.configure(config,SparkBase.ResetMode.kResetSafeParameters,SparkBase.PersistMode.kPersistParameters);
 
+        SparkMaxConfig configrRight = new SparkMaxConfig();
+        configrRight.follow(leftMotor,true);
+        rightMotor.configure(configrRight,SparkBase.ResetMode.kResetSafeParameters,SparkBase.PersistMode.kPersistParameters);
 
-
-        SparkMaxConfig configright = new SparkMaxConfig();
-        configright.follow(leftMotor,true);
-        rightMotor.configure(configright,SparkBase.ResetMode.kResetSafeParameters,SparkBase.PersistMode.kPersistParameters);
-
-        rightMotor.configure(configright, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        rightMotor.configure(configrRight, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     }
 
-
-
-
     public void move(double pow) {
-        leftMotor.set(pow + RobotMap.ELEVATOR_FF);
+        leftMotor.set(RobotMap.ELEVATOR_FF);
     }
 
     public void stop() {
@@ -59,18 +51,18 @@ public class ElevatorSystem extends SubsystemBase {
     }
 
     public double getPositionMeters() {
-        return encoder.getPosition() * RobotMap.CIRCUMFERENCE;
+        return leftEncoder.getPosition() * RobotMap.CIRCUMFERENCE;
     }
 
     public boolean getLimitSwitch() {
-        return Limitswitch.get();
+        return limitswitch.get();
     }
 
     public void ResetEncoder(){
-        encoder.setPosition(0);
+        leftEncoder.setPosition(0);
     }
 
-    public void moveToSetPointSpark(double setpoint){
+    public void moveToSetPoint(double setpoint){
         sparkPIDcontroller.setReference(setpoint / RobotMap.CIRCUMFERENCE, SparkBase.ControlType.kPosition);
 
     }
