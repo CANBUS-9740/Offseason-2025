@@ -13,27 +13,27 @@ public class Setheight_WPIlib extends Command {
     private static final double KP = RobotMap.KP;
     private static final double KI = RobotMap.KI;
     private static final double KD = RobotMap.KD;
-    private final PIDController controller;
+    private final PIDController pid;
 
 
     public Setheight_WPIlib(ElevatorSystem elevatorSystem, double height) {
         this.elevatorSystem = elevatorSystem;
-        this.controller = new PIDController(KP, KI, KD);
-        this.controller.setSetpoint(height);
+        this.pid = new PIDController(KP, KI, KD);
+
         addRequirements(elevatorSystem);
 
     }
 
     @Override
     public void initialize() {
-        controller.reset();
+        pid.reset();
 
     }
 
     @Override
     public void execute() {
         processvariable= elevatorSystem.getPositionMeters();
-        output = controller.calculate(processvariable);
+        output = pid.calculate(processvariable);
         elevatorSystem.move(output);
     }
 
