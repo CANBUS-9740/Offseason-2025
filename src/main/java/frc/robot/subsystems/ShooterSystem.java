@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class ShooterSystem extends SubsystemBase {
-    private final SparkMax shoot;
+    private final SparkMax motor;
     private final DigitalInput proximity;
 
     public ShooterSystem() {
-        shoot = new SparkMax(RobotMap.SHOOTER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless);
+        motor = new SparkMax(RobotMap.SHOOTER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless);
         proximity = new DigitalInput(RobotMap.SHOOTER_IR_PROXIMITY_SENSOR_ID);
 
         SparkMaxConfig config = new SparkMaxConfig();
@@ -24,7 +24,7 @@ public class ShooterSystem extends SubsystemBase {
         config.idleMode(SparkBaseConfig.IdleMode.kBrake);
         config.smartCurrentLimit(0, 0);//test the limit
 
-        shoot.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     public boolean hasCoral() {
@@ -32,10 +32,10 @@ public class ShooterSystem extends SubsystemBase {
     }
 
     public void motorMove(double power){
-        shoot.set(power);
+        motor.set(power);
     }
 
     public void stop(){
-        shoot.stopMotor();
+        motor.stopMotor();
     }
 }

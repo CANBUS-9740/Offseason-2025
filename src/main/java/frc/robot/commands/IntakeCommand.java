@@ -11,12 +11,9 @@ public class IntakeCommand extends Command {
         addRequirements(shooterSystem);
     }
 
-
-
-
     @Override
     public void execute() {
-        shooterSystem.motorMove(0.25);
+        shooterSystem.motorMove(-0.25);
     }
 
     @Override
