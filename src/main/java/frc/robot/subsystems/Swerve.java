@@ -4,26 +4,38 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.GameField;
 import frc.robot.RobotMap;
 import org.json.simple.parser.ParseException;
 import swervelib.SwerveDrive;
+import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class Swerve extends SubsystemBase {
-    public final SwerveDrive swerveDrive;
-
+    public SwerveDrive swerveDrive;
+    private static GameField gameField;
+    private GameField.SelectedSourceStand sourceStand;
 
     public Swerve() {
         SwerveDriveTelemetry.verbosity = SwerveDriveTelemetry.TelemetryVerbosity.HIGH;
@@ -33,6 +45,10 @@ public class Swerve extends SubsystemBase {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        gameField = new GameField();
+        sourceStand = new GameField.SelectedSourceStand(GameField.SourceStand.RIGHT, GameField.SourceStandSide.CENTER, swerveDrive.getPose());
+
+        swerveDrive = new SwerveDrive(swerveDrive.swerveDriveConfiguration, swerveDrive.swerveController.config, RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS,swerveDrive.getPose());
 
         swerveDrive.setHeadingCorrection(false);
         swerveDrive.setCosineCompensator(false);
@@ -95,8 +111,35 @@ public class Swerve extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
         );
 
-        PathPlannerLogging.setLogActivePathCallback((poses)-> {
+        PathPlannerLogging.setLogActivePathCallback((poses) -> {
             swerveDrive.field.getObject("Trajectory").setPoses(poses);
         });
     }
+
+    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+            new Pose2d(new Translation2d(sourceStand.pose.getX(), sourceStand.pose.getY()), new Rotation2d(sourceStand.pose.getRotation().getRadians()))
+    );
+
+    PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI);
+
+    PathPlannerPath path = new PathPlannerPath(
+            waypoints,
+            constraints,
+            null,
+            new GoalEndState(0.0, Rotation2d.fromDegrees(180))
+    );
+
+
+    public Command followPath(PathPlannerPath path){
+        try{
+            return AutoBuilder.followPath(path);
+
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
+
+
+        }
+
 }
