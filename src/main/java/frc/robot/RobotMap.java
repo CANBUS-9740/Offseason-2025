@@ -5,6 +5,9 @@ public class RobotMap {
 
     }
 
+    public static final double STAND_SELECTION_HEADING_MARGIN = 5;
+    public static final double STAND_SELECTION_GENERAL_ORIENTATION_MARGIN = 45;
+
     public static final int SHOOTER_MOTOR_ID = 0;
     public static final int SHOOTER_IR_PROXIMITY_SENSOR_ID = 1;
     public static final double SHOOTER_MOTOR_GEAR_RATIO = 3;
@@ -22,8 +25,10 @@ public class RobotMap {
     public static final double CIRCUMFERNCE_MM = 0.020803;
     public static final double GEAR_RATIO_ELEVATOR = 15;
     public static final double ROBOT_HEIGHT_M = 0;
-    public static final double ELEVATOR_L2_HEIGHT_M = 0.81;
-    public static final double ELEVATOR_L3_HEIGHT_M = 1.21;
-    public static final double ELEVATOR_L1_HEIGHT_M = 0.46;
+    public static final double SOURCE_HEIGHT = 1.35;
+    public static final double ELEVATOR_L1_HEIGHT_M = 0;
+    public static final double ELEVATOR_L2_HEIGHT_M = 0.46;
+    public static final double ELEVATOR_L3_HEIGHT_M = 0.81;
+    public static final double ELEVATOR_L4_HEIGHT_M = 1.21;
 
 }
