@@ -21,8 +21,15 @@ import frc.robot.commands.DriveStupid;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.SwerveFieldDriveCommand;
 import frc.robot.subsystems.Swerve;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShootCommand;
+import frc.robot.subsystems.ShooterSystem;
 
 public class Robot extends TimedRobot {
+    private XboxController controller;
+    private ShooterSystem shooterSystem;
 
     private static Swerve swerveSystem;
     private XboxController xboxController;
@@ -34,6 +41,12 @@ public class Robot extends TimedRobot {
         swerveSystem = new Swerve();
         xboxController = new XboxController(0);
         pathPlanner = new PathPlanner();
+        //init for intake command that activates on an A button press
+        JoystickButton aButton = new JoystickButton(controller,XboxController.Button.kA.value);
+        aButton.onTrue(new IntakeCommand(shooterSystem));
+        //init for shoot command that activates on a B button press
+        JoystickButton bButton = new JoystickButton(controller,XboxController.Button.kB.value);
+        aButton.onTrue(new ShootCommand(shooterSystem));
     }
 
     @Override
@@ -122,6 +135,6 @@ public class Robot extends TimedRobot {
     }
 
     public static Swerve getSwerveSystem() {
-        return swerveSystem;
+         return swerveSystem;
     }
 }
