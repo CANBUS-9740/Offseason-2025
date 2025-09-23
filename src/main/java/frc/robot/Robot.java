@@ -101,7 +101,8 @@ public class Robot extends TimedRobot {
         //new DriveStupid(swerveSystem).schedule();
         swerveSystem.resetPose(new Pose2d(new Translation2d(2.5, 6), new Rotation2d(Math.toRadians(180))));
         new SequentialCommandGroup(
-                pathPlanner.goToSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.CENTER),
+                pathPlanner.goToPoseSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.CENTER),
+                pathPlanner.goToPoseReef(GameField.ReefStand.STAND_1, GameField.ReefStandSide.LEFT),
                 Commands.print("commandIsFinished")
         ).schedule();
 

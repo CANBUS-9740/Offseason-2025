@@ -45,12 +45,30 @@ public class PathPlanner {
         return AutoBuilder.followPath(path);
     }
 
-    public Command goToReef(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
+    public Command goToPoseSource(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
+        Pose2d pose = gameField.getPoseForSource(sourceStand, sourceStandSide);
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                Robot.getSwerveSystem().getPose(),
+                pose
+        );
+
+        PathPlannerPath path = new PathPlannerPath(
+                waypoints,
+                RobotMap.PATH_CONSTRAINTS,
+                null,
+                new GoalEndState(0.0, pose.getRotation()));
+
+        path.preventFlipping = true;
+
+        return AutoBuilder.followPath(path);
+    }
+
+    private Command goToReef(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
         Pose2d pose = gameField.getPoseForReefStand(reefStand, reefStandSide);
         return goToPose(pose);
     }
 
-    public Command goToSource(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
+    private Command goToSource(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
         Pose2d pose = gameField.getPoseForSource(sourceStand, sourceStandSide);
         return goToPose(pose);
     }
