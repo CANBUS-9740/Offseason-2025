@@ -12,12 +12,9 @@ public class RobotMap {
 
     public static final DCMotor SWERVE_DRIVE_MOTOR = DCMotor.getKrakenX60(1);
     public static final double SWERVE_DRIVE_MAX_SPEED_MPS = Units.radiansToRotations(SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec) / 6.12 * 0.05;
-    public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(2.8, 1.2, Math.PI, Math.PI);
+    public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(2.8, 4, Math.PI, Math.PI);
 
-    public static final double STAND_SELECTION_HEADING_MARGIN = 5;
-    public static final double STAND_SELECTION_GENERAL_ORIENTATION_MARGIN = 45;
-
-    public static final int SHOOTER_MOTOR_ID = 0;
+    public static final int SHOOTER_MOTOR_ID = 28;
     public static final int SHOOTER_IR_PROXIMITY_SENSOR_ID = 1;
     public static final double SHOOTER_MOTOR_GEAR_RATIO = 3;
 
@@ -25,8 +22,8 @@ public class RobotMap {
     // add constants here
     // public static final type NAME = value;
     //Elevator system
-    public static final int ELEVATOR_MASTER_MOTOR = 0;
-    public static final int ELEVATOR_FOLLOW_MOTOR = 1;
+    public static final int ELEVATOR_MASTER_MOTOR = 26;
+    public static final int ELEVATOR_FOLLOW_MOTOR = 27;
     public static final double ELEVATOR_P = 0;
     public static final double ELEVATOR_I = 0;
     public static final double ELEVATOR_D = 0;

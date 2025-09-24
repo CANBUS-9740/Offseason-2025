@@ -294,7 +294,7 @@ public class GameField {
         return DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
     }
 
-    private static double getDistanceToMeters(Pose2d source, Pose2d target) {
+    public static double getDistanceToMeters(Pose2d source, Pose2d target) {
         return Math.sqrt(Math.pow(source.getX() - target.getX(), 2) + Math.pow(source.getY() - target.getY(), 2));
     }
 

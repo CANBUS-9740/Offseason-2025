@@ -2,21 +2,24 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Swerve;
 
 public class SwerveDriveCommand extends Command {
     private Swerve swerveSub;
-    private XboxController xboxController;
-    double lastX = 0;
-    double lastY = 0;
-    double lastRot = 0;
+    private CommandXboxController xboxController;
+    private boolean fieldDrive;
+    private double allianceSwapper = 1;
 
-    public SwerveDriveCommand(Swerve swerveSub, XboxController xboxController) {
+    public SwerveDriveCommand(Swerve swerveSub, CommandXboxController xboxController, boolean fieldDrive) {
         this.swerveSub = swerveSub;
         this.xboxController = xboxController;
+        this.fieldDrive = fieldDrive;
 
         addRequirements(swerveSub);
     }
@@ -28,16 +31,15 @@ public class SwerveDriveCommand extends Command {
 
     @Override
     public void execute() {
-        double x = -MathUtil.applyDeadband(xboxController.getLeftY(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
-        double y = -MathUtil.applyDeadband(xboxController.getLeftX(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
-        double rotation = -MathUtil.applyDeadband(xboxController.getRightX(), 0.1) * 2;
-        swerveSub.drive(new ChassisSpeeds(x, y, rotation));
-        /*if (lastX != x || lastY != y || lastRot != rotation) {
+        double x = allianceSwapper * -MathUtil.applyDeadband(xboxController.getLeftY(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
+        double y = allianceSwapper * -MathUtil.applyDeadband(xboxController.getLeftX(), 0.1) * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS * 2;
+        double rotation = -MathUtil.applyDeadband(xboxController.getRightX(), 0.1) * 0.3;
+
+        if (fieldDrive) {
+            swerveSub.driveFieldRelative(x, y, rotation);
+        } else {
             swerveSub.drive(new ChassisSpeeds(x, y, rotation));
-            lastX = x;
-            lastY = y;
-            lastRot = rotation;
-        }*/
+        }
     }
 
     @Override
@@ -48,5 +50,13 @@ public class SwerveDriveCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         swerveSub.stop();
+    }
+
+    public void setAllianceSwapper() {
+        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+            allianceSwapper = -1;
+        } else {
+            allianceSwapper = 1;
+        }
     }
 }
