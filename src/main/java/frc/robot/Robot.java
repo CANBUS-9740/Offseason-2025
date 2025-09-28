@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
         swerveSystem.setDefaultCommand(swerveDriveCommand);
 
         xboxController.a().onTrue(
-                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(1.5, 1.5, new Rotation2d(0))))
+                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(2.5, 6, new Rotation2d(0))))
         );
         xboxController.b().onTrue(
                 new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(5.5, 2.5, new Rotation2d(0))))
