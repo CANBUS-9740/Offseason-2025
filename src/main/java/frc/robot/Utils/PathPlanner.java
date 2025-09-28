@@ -1,0 +1,151 @@
+package frc.robot.Utils;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
+import frc.robot.RobotMap;
+import frc.robot.subsystems.Swerve;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+
+public class PathPlanner {
+    private final GameField gameField;
+    private Boolean isInAutoMovement = false;
+    private Swerve swerve;
+
+    public PathPlanner(Swerve swerve) {
+        gameField = new GameField();
+        this.swerve = swerve;
+    }
+
+    public Command goToPosePathFind(Pose2d pose) {
+        return new SequentialCommandGroup(
+                Commands.runOnce(()-> isInAutoMovement = true),
+                AutoBuilder.pathfindToPose(pose, RobotMap.PATH_CONSTRAINTS),
+                Commands.runOnce(()-> isInAutoMovement = false)
+        );
+    }
+
+    public Command goToPose(Pose2d pose) {
+        return Commands.defer(()-> {
+            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                    swerve.getPose(),
+                    pose
+            );
+
+            PathPlannerPath path = new PathPlannerPath(
+                    waypoints,
+                    RobotMap.PATH_CONSTRAINTS,
+                    null,
+                    new GoalEndState(0.0, pose.getRotation()));
+
+            path.preventFlipping = true;
+
+            return new SequentialCommandGroup(
+                    Commands.runOnce(()-> isInAutoMovement = true),
+                    AutoBuilder.followPath(path),
+                    Commands.runOnce(()-> isInAutoMovement = false)
+            );
+        }, Set.of(swerve));
+    }
+
+    public Command goToPoseReef(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
+        Pose2d pose = gameField.getPoseForReefStand(reefStand, reefStandSide);
+        return goToPose(pose);
+    }
+
+    public Command goToPoseSource(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
+        Pose2d pose = gameField.getPoseForSource(sourceStand, sourceStandSide);
+        return goToPose(pose);
+    }
+
+    public Command goToReefPathFind(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
+        Pose2d pose = gameField.getPoseForReefStand(reefStand, reefStandSide);
+        return goToPose(pose);
+    }
+
+    public Command goToSourcePathFind(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
+        Pose2d pose = gameField.getPoseForSource(sourceStand, sourceStandSide);
+        return goToPose(pose);
+    }
+
+    public Command goToClosestSource() {
+        return Commands.defer(() -> {
+            Optional<GameField.SelectedSourceStand> closestSource = gameField.getClosestSourceTo(swerve.getPose());
+
+            if (closestSource.isEmpty()) {
+                return Commands.none();
+            }
+
+            GameField.SelectedSourceStand source = closestSource.get();
+            return goToPoseSource(source.stand, source.side);
+        }, Set.of(swerve));
+    }
+
+    public Command goToClosestReef() {
+        return Commands.defer(() -> {
+            Optional<GameField.SelectedReefStand> closestReef = gameField.findBestReefStandTo(swerve.getPose(), false);
+
+            if (closestReef.isEmpty()) {
+                return Commands.none();
+            }
+
+            GameField.SelectedReefStand reef = closestReef.get();
+            return goToPoseReef(reef.stand, reef.side);
+        }, Set.of(swerve));
+    }
+
+    public Command doSavedPath(String pathName) {
+        try {
+            PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+
+            return AutoBuilder.followPath(path);
+        } catch (Exception e) {
+            DriverStation.reportError("cant run the path: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
+    }
+
+    public boolean closestSourceIsPresent() {
+        return gameField.getClosestSourceTo(swerve.getPose()).isPresent();
+    }
+
+    public boolean closestReefIsPresent() {
+        return gameField.findBestReefStandTo(swerve.getPose(), false).isPresent();
+    }
+
+    public void update() {
+        Optional<GameField.SelectedSourceStand> closestSource = gameField.getClosestSourceTo(swerve.getPose());
+        if (closestSource.isPresent()) {
+            GameField.SelectedSourceStand stand = closestSource.get();
+            SmartDashboard.putString("ClosestSource", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name(), stand.side.name()));
+            swerve.getField().getObject("ClosestSource").setPose(stand.pose);
+        } else {
+            SmartDashboard.putString("ClosestSource", "");
+            swerve.getField().getObject("ClosestSource").setPoses();
+        }
+
+        Optional<GameField.SelectedReefStand> closestReef = gameField.findBestReefStandTo(swerve.getPose(), false);
+        if (closestReef.isPresent()) {
+            GameField.SelectedReefStand stand = closestReef.get();
+            swerve.getField().getObject("ClosestStand").setPose(stand.pose);
+            SmartDashboard.putString("ClosestStand", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name(), stand.side.name()));
+        } else {
+            swerve.getField().getObject("ClosestStand").setPoses();
+            SmartDashboard.putString("ClosestStand", "");
+        }
+
+        SmartDashboard.putBoolean("isInsAutoMovement", isInAutoMovement);
+    }
+}
