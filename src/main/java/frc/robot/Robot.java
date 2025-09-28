@@ -14,12 +14,15 @@ import frc.robot.Utils.GroupCommands;
 import frc.robot.Utils.PathPlanner;
 import frc.robot.commands.DriveStupid;
 import frc.robot.commands.SwerveDriveCommand;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.ShooterSystem;
+
+import java.util.Optional;
 
 public class Robot extends TimedRobot {
     //private XboxController controller;
@@ -31,6 +34,7 @@ public class Robot extends TimedRobot {
 
     private PathPlanner pathPlanner;
     private GroupCommands groupCommands;
+    private Limelight limelight;
 
     @Override
     public void robotInit() {
@@ -39,6 +43,7 @@ public class Robot extends TimedRobot {
         xboxController = new CommandXboxController(0);
         pathPlanner = new PathPlanner(swerveSystem);
         groupCommands = new GroupCommands(xboxController, swerveSystem);
+        limelight = new Limelight("limelight-edi");
         //init for intake command that activates on an A button press
 //        JoystickButton aButton = new JoystickButton(controller,XboxController.Button.kA.value);
 //        aButton.onTrue(new IntakeCommand(shooterSystem));
@@ -77,6 +82,12 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
 
         groupCommands.update();
+
+        Optional<LimelightHelpers.PoseEstimate> poseEstimateOptional = limelight.getPose();
+        if(poseEstimateOptional.isPresent()){
+            LimelightHelpers.PoseEstimate poseEstimate = poseEstimateOptional.get();
+            swerveSystem.addVisionMeasurement(poseEstimate);
+        }
     }
 
     @Override
