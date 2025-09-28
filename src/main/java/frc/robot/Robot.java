@@ -150,6 +150,7 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {
         SmartDashboard.putNumber("modulePosition", Units.metersToInches(swerveSystem.swerveDrive.getModules()[0].getPosition().distanceMeters));
         SmartDashboard.putNumber("FLDPR", swerveSystem.swerveDrive.getModules()[0].getDriveMotor().getPosition());
+
     }
 
     @Override
