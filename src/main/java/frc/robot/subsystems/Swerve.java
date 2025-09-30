@@ -99,8 +99,8 @@ public class Swerve extends SubsystemBase {
                 this::getRobotRelativeSpeeds,
                 (speeds, feedforwards) -> drive(speeds),
                 new PPHolonomicDriveController(
-                        new PIDConstants(5, 0, 0.5),
-                        new PIDConstants(7, 0.2, 0.5)
+                        RobotMap.SWERVE_PATH_DRIVE_PID,
+                        RobotMap.SWERVE_PATH_ROTATE_PID
                 ),
                 config,
                 () -> {

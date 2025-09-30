@@ -308,9 +308,9 @@ public class GameField {
         double xDistance = Math.cos(reefPose.getRotation().getRadians()) * PRE_TARGET_POSE_REEF_IN_METERS;
         double yDistance = Math.sin(reefPose.getRotation().getRadians()) * PRE_TARGET_POSE_REEF_IN_METERS;
 
-        double xPose = reefPose.getX() + xDistance;
-        double yPose = reefPose.getY() + yDistance;
+        double xPose = reefPose.getX() - xDistance;
+        double yPose = reefPose.getY() - yDistance;
 
-        return new Pose2d(xPose, yPose, reefPose.getRotation().plus(Rotation2d.fromDegrees(180)));
+        return new Pose2d(xPose, yPose, reefPose.getRotation());
     }
 }

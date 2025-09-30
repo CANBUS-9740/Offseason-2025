@@ -1,25 +1,20 @@
 package frc.robot;
 
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Utils.GameField;
 import frc.robot.Utils.GroupCommands;
 import frc.robot.Utils.PathPlanner;
-import frc.robot.commands.DriveStupid;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ShootCommand;
-import frc.robot.subsystems.ShooterSystem;
 
 public class Robot extends TimedRobot {
     //private XboxController controller;
@@ -49,26 +44,27 @@ public class Robot extends TimedRobot {
 
         swerveSystem.setDefaultCommand(swerveDriveCommand);
 
-        xboxController.a().onTrue(
-                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(2.5, 6, new Rotation2d(0))))
-        );
-        xboxController.b().onTrue(
-                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(5.5, 2.5, new Rotation2d(0))))
-        );
-        xboxController.x().onTrue(
-                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(3.5, 2.5, new Rotation2d(0))))
-        );
-
-        xboxController.y().onTrue(
-                new SequentialCommandGroup(
-                        new InstantCommand(()-> System.out.println("startCommand")),
-                        pathPlanner.goToClosestReef()
-                )
-        );
-
-        xboxController.rightBumper().onTrue(
-                pathPlanner.goToClosestSource()
-        );
+//        xboxController.a().onTrue(
+//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(2.5, 6, new Rotation2d(0))))
+//        );
+//        xboxController.b().onTrue(
+//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(5.5, 2.5, new Rotation2d(0))))
+//        );
+//        xboxController.x().onTrue(
+//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(3.5, 2.5, new Rotation2d(0))))
+//        );
+//
+//        xboxController.y().onTrue(
+//                new SequentialCommandGroup(
+//                        new InstantCommand(()-> System.out.println("startCommand")),
+//                        pathPlanner.goToPreTargetClosestReefPose(),
+//                        pathPlanner.goToClosestReef()
+//                )
+//        );
+//
+//        xboxController.rightBumper().onTrue(
+//                pathPlanner.goToClosestSource()
+//        );
     }
 
     @Override
@@ -142,8 +138,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        swerveSystem.swerveDrive.resetOdometry(new Pose2d(0, 0 ,new Rotation2d(0)));
-        new DriveStupid(swerveSystem).schedule();
+        swerveSystem.swerveDrive.resetOdometry(new Pose2d(2.164, 6.271 ,new Rotation2d(0)));
+        pathPlanner.followPath("Example Path");
     }
 
     @Override

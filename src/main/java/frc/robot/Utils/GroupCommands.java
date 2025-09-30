@@ -40,8 +40,8 @@ public class GroupCommands {
 
 
     public GroupCommands(CommandXboxController xboxController, Swerve swerve) {
-        //elevatorSystem = new ElevatorSystem();
-        //shooterSystem = new ShooterSystem();
+        elevatorSystem = new ElevatorSystem();
+        shooterSystem = new ShooterSystem();
         gameField = new GameField();
         pathPlanner = new PathPlanner(swerve);
 
