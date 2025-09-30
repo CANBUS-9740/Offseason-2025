@@ -5,11 +5,10 @@ import frc.robot.subsystems.ElevatorSystem;
 
 public class ElevatorMoveCommand extends Command {
     private final ElevatorSystem elevator;
-    private final double targetHeight;
+    private double targetHeight;
 
-    public ElevatorMoveCommand(ElevatorSystem elevator, double targetHeight){
+    public ElevatorMoveCommand(ElevatorSystem elevator){
         this.elevator = elevator;
-        this.targetHeight = targetHeight;
 
         addRequirements(elevator);
     }
@@ -31,7 +30,15 @@ public class ElevatorMoveCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return elevator.isAtHeight(targetHeight);
+        return  false; //elevator.isAtHeight(targetHeight);
+    }
+
+    public void setTargetHeight(double height) {
+        targetHeight = height;
+    }
+
+    public boolean getIsNear(double height) {
+        return elevator.isAtHeight(height);
     }
 }
 
