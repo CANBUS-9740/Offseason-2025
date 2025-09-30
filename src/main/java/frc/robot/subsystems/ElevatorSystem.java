@@ -14,8 +14,6 @@ public class ElevatorSystem extends SubsystemBase {
     private final SparkMax motorMaster;
     private final SparkMax motorFollow;
     private final RelativeEncoder encoder;
-    private double targetHeight;
-
 
     public ElevatorSystem() {
         motorMaster = new SparkMax(RobotMap.ELEVATOR_MASTER_MOTOR, SparkLowLevel.MotorType.kBrushless);
@@ -41,17 +39,16 @@ public class ElevatorSystem extends SubsystemBase {
         motorMaster.stopMotor();
     }
 
-    public double getHeight(){
-        return encoder.getPosition() * RobotMap.CIRCUMFERNCE_MM;
-        //המשך חישוב?
+    public double getHeightM(){
+        return encoder.getPosition() * RobotMap.CIRCUMFERENCE_M;
     }
 
-    public void moveToHeight(double targetHeight){
-        motorMaster.getClosedLoopController().setReference(targetHeight / RobotMap.CIRCUMFERNCE_MM, SparkBase.ControlType.kPosition);
+    public void moveToHeight(double targetHeightM){
+        motorMaster.getClosedLoopController().setReference(targetHeightM / RobotMap.CIRCUMFERENCE_M, SparkBase.ControlType.kPosition);
     }
 
     public boolean isAtHeight(double targetHeight){
-        return MathUtil.isNear(targetHeight,getHeight(), 0.1);
+        return MathUtil.isNear(targetHeight, getHeightM(), 0.1);
     }
 
 }

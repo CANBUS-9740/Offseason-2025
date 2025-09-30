@@ -13,7 +13,7 @@ public class RobotMap {
     public static final double ELEVATOR_I = 0;
     public static final double ELEVATOR_D = 0;
     public static final double ELEVATOR_FF = 0;
-    public static final double CIRCUMFERNCE_MM = 0.020803;
+    public static final double CIRCUMFERENCE_M = 0.020803;
     public static final double GEAR_RATIO_ELEVATOR = 15;
     public static final double ROBOT_HEIGHT_M = 0;
     public static final double ELEVATOR_L2_HEIGHT_M = 0.81;
