@@ -1,11 +1,13 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSystem;
 
 public class ElevatorMoveCommand extends Command {
     private final ElevatorSystem elevator;
     private double targetHeight;
+    private boolean setNewTarget;
 
     public ElevatorMoveCommand(ElevatorSystem elevator){
         this.elevator = elevator;
@@ -15,12 +17,18 @@ public class ElevatorMoveCommand extends Command {
 
     @Override
     public void initialize() {
-        elevator.moveToHeight(targetHeight);
+        setNewTarget = true;
+        targetHeight = 0;
     }
 
     @Override
     public void execute() {
+        if (setNewTarget) {
+            elevator.moveToHeight(targetHeight);
+            setNewTarget = false;
+        }
 
+        SmartDashboard.putBoolean("ElevatorAtTargetHeight", getIsNear(targetHeight));
     }
 
     @Override
@@ -30,11 +38,12 @@ public class ElevatorMoveCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return  false; //elevator.isAtHeight(targetHeight);
+        return false; //elevator.isAtHeight(targetHeight);
     }
 
     public void setTargetHeight(double height) {
         targetHeight = height;
+        setNewTarget = true;
     }
 
     public boolean getIsNear(double height) {
