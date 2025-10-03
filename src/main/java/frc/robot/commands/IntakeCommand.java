@@ -5,11 +5,14 @@ import frc.robot.subsystems.ShooterSystem;
 
 public class IntakeCommand extends Command {
     private final ShooterSystem shooterSystem;
+    private double startdist;//in CM
 
     public IntakeCommand(ShooterSystem shooterSystem) {
         this.shooterSystem = shooterSystem;
         addRequirements(shooterSystem);
     }
+    @Override
+    public void initialize() {startdist=shooterSystem.getDistance();}
 
     @Override
     public void execute() {
@@ -18,7 +21,7 @@ public class IntakeCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooterSystem.hasCoral();
+        return shooterSystem.getDistance()<=startdist/2;
     }
 
     @Override

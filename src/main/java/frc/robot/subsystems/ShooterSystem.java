@@ -6,16 +6,17 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class ShooterSystem extends SubsystemBase {
     private final SparkMax motor;
-    private final DigitalInput proximity;
+    private final Ultrasonic proximity;
 
     public ShooterSystem() {
         motor = new SparkMax(RobotMap.SHOOTER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless);
-        proximity = new DigitalInput(RobotMap.SHOOTER_IR_PROXIMITY_SENSOR_ID);
+        proximity = new Ultrasonic(RobotMap.ULTRASONIC_SENSOR_PING_PORT,RobotMap.ULTRASONIC_SENSOR_ECHO_PORT);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.encoder.
@@ -27,9 +28,7 @@ public class ShooterSystem extends SubsystemBase {
         motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
-    public boolean hasCoral() {
-        return proximity.get();
-    }
+    public double getDistance(){return proximity.getRangeMM()/10;}
 
     public void motorMove(double power){
         motor.set(power);
