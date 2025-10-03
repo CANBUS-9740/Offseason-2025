@@ -22,8 +22,7 @@ public class RobotMap {
     // add constants here
     // public static final type NAME = value;
     //Elevator system
-    public static final int ELEVATOR_MASTER_MOTOR = 26;
-    public static final int ELEVATOR_FOLLOW_MOTOR = 27;
+    public static final int ELEVATOR_MOTOR = 26;
     public static final double ELEVATOR_P = 0;
     public static final double ELEVATOR_I = 0;
     public static final double ELEVATOR_D = 0;
