@@ -1,11 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -16,10 +17,6 @@ import frc.robot.commands.DriveStupid;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ShootCommand;
-import frc.robot.subsystems.ShooterSystem;
 
 public class Robot extends TimedRobot {
     //private XboxController controller;
@@ -32,8 +29,17 @@ public class Robot extends TimedRobot {
     private PathPlanner pathPlanner;
     private GroupCommands groupCommands;
 
+    private Ultrasonic ultraSonicSensor;
+    private double startdist;
+    private MedianFilter m_filter=new MedianFilter(5);
+
+
     @Override
     public void robotInit() {
+        ultraSonicSensor =new Ultrasonic(RobotMap.ULTRASONIC_SENSOR_PING_PORT,RobotMap.ULTRASONIC_SENSOR_ECHO_PORT);
+        Ultrasonic.setAutomaticMode(true);
+        startdist=ultraSonicSensor.getRangeMM();
+
         swerveSystem = new Swerve();
         xboxController = new CommandXboxController(0);
         pathPlanner = new PathPlanner(swerveSystem);
@@ -69,11 +75,18 @@ public class Robot extends TimedRobot {
         xboxController.rightBumper().onTrue(
                 pathPlanner.goToClosestSource()
         );
+
     }
 
     @Override
     public void robotPeriodic() {
+
+        double filter_m=m_filter.calculate(ultraSonicSensor.getRangeMM());
         CommandScheduler.getInstance().run();
+        SmartDashboard.putNumber("distance",filter_m/10);
+        if(ultraSonicSensor.getRangeMM()<startdist/2){SmartDashboard.putBoolean("sensor",true);}
+        else{SmartDashboard.putBoolean("sensor",false);}
+
 
         groupCommands.update();
     }

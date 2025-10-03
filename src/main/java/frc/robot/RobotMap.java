@@ -36,5 +36,7 @@ public class RobotMap {
     public static final double ELEVATOR_L2_HEIGHT_M = 0.46;
     public static final double ELEVATOR_L3_HEIGHT_M = 0.81;
     public static final double ELEVATOR_L4_HEIGHT_M = 1.21;
+    public static final int ULTRASONIC_SENSOR_PING_PORT=8;
+    public static final int ULTRASONIC_SENSOR_ECHO_PORT = 9;
 
 }
