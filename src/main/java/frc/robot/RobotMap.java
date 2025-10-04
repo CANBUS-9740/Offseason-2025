@@ -17,7 +17,7 @@ public class RobotMap {
     public static final PIDConstants SWERVE_PATH_DRIVE_PID = new PIDConstants(5, 0, 0.5);
     public static final PIDConstants SWERVE_PATH_ROTATE_PID = new PIDConstants(7, 0.2, 0.5);
 
-    public static final int SHOOTER_MOTOR_ID = 28;
+    public static final int SHOOTER_MOTOR_ID = 46;
     public static final int SHOOTER_IR_PROXIMITY_SENSOR_ID = 1;
     public static final double SHOOTER_MOTOR_GEAR_RATIO = 3;
 
@@ -25,8 +25,7 @@ public class RobotMap {
     // add constants here
     // public static final type NAME = value;
     //Elevator system
-    public static final int ELEVATOR_MASTER_MOTOR = 26;
-    public static final int ELEVATOR_FOLLOW_MOTOR = 27;
+    public static final int ELEVATOR_MOTOR = 45;
     public static final double ELEVATOR_P = 0;
     public static final double ELEVATOR_I = 0;
     public static final double ELEVATOR_D = 0;
@@ -39,5 +38,7 @@ public class RobotMap {
     public static final double ELEVATOR_L2_HEIGHT_M = 0.46;
     public static final double ELEVATOR_L3_HEIGHT_M = 0.81;
     public static final double ELEVATOR_L4_HEIGHT_M = 1.21;
+    public static final int ULTRASONIC_SENSOR_PING_PORT = 6;
+    public static final int ULTRASONIC_SENSOR_ECHO_PORT = 5;
 
 }

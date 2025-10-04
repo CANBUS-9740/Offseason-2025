@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSystem;
 
 public class ShootCommand extends Command {
+
     private final ShooterSystem shooterSystem;
 
     public ShootCommand(ShooterSystem shooterSystem) {
@@ -23,7 +24,7 @@ public class ShootCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return !(shooterSystem.hasCoral());
+        return !shooterSystem.hasCoral();
     }
 
     @Override

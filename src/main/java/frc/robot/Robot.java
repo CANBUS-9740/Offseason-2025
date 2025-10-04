@@ -1,6 +1,6 @@
 package frc.robot;
 
-import com.pathplanner.lib.config.PIDConstants;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Utils.GameField;
 import frc.robot.Utils.GroupCommands;
 import frc.robot.Utils.PathPlanner;
+import frc.robot.commands.DriveStupid;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -21,18 +24,21 @@ public class Robot extends TimedRobot {
     //private ShooterSystem shooterSystem;
 
     private static Swerve swerveSystem;
-    private CommandXboxController xboxController;
+    private CommandXboxController driverController;
+    private CommandXboxController operationController;
     private SwerveDriveCommand swerveDriveCommand;
 
     private PathPlanner pathPlanner;
     private GroupCommands groupCommands;
 
+
     @Override
     public void robotInit() {
         swerveSystem = new Swerve();
-        xboxController = new CommandXboxController(0);
+        driverController = new CommandXboxController(0);
+        operationController = new CommandXboxController(1);
         pathPlanner = new PathPlanner(swerveSystem);
-        groupCommands = new GroupCommands(xboxController, swerveSystem);
+        groupCommands = new GroupCommands(driverController, swerveSystem);
         //init for intake command that activates on an A button press
 //        JoystickButton aButton = new JoystickButton(controller,XboxController.Button.kA.value);
 //        aButton.onTrue(new IntakeCommand(shooterSystem));
@@ -43,9 +49,9 @@ public class Robot extends TimedRobot {
         swerveDriveCommand = groupCommands.swerveDrive(true);
 
         swerveSystem.setDefaultCommand(swerveDriveCommand);
-
+//
 //        xboxController.a().onTrue(
-//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(2.5, 6, new Rotation2d(0))))
+//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(1.5, 1.5, new Rotation2d(0))))
 //        );
 //        xboxController.b().onTrue(
 //                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(5.5, 2.5, new Rotation2d(0))))
@@ -57,7 +63,6 @@ public class Robot extends TimedRobot {
 //        xboxController.y().onTrue(
 //                new SequentialCommandGroup(
 //                        new InstantCommand(()-> System.out.println("startCommand")),
-//                        pathPlanner.goToPreTargetClosestReefPose(),
 //                        pathPlanner.goToClosestReef()
 //                )
 //        );
@@ -65,12 +70,16 @@ public class Robot extends TimedRobot {
 //        xboxController.rightBumper().onTrue(
 //                pathPlanner.goToClosestSource()
 //        );
+
+        operationController.pov(0).onTrue(groupCommands.shootCommand());
+        operationController.pov(180).onTrue(groupCommands.intakeCommand());
+
+        driverController.rightBumper().onTrue(groupCommands.resetCommand());
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-
         groupCommands.update();
     }
 
@@ -138,8 +147,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        swerveSystem.swerveDrive.resetOdometry(new Pose2d(2.164, 6.271 ,new Rotation2d(0)));
-        pathPlanner.followPath("Example Path");
+        //swerveSystem.swerveDrive.resetOdometry(new Pose2d(0, 0 ,new Rotation2d(0)));
+        //new DriveStupid(swerveSystem).schedule();
+        
     }
 
     @Override
