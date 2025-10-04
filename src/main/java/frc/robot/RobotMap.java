@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -13,6 +14,8 @@ public class RobotMap {
     public static final DCMotor SWERVE_DRIVE_MOTOR = DCMotor.getKrakenX60(1);
     public static final double SWERVE_DRIVE_MAX_SPEED_MPS = Units.radiansToRotations(SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec) / 6.12 * 0.05;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(2.8, 4, Math.PI, Math.PI);
+    public static final PIDConstants SWERVE_PATH_DRIVE_PID = new PIDConstants(5, 0, 0.5);
+    public static final PIDConstants SWERVE_PATH_ROTATE_PID = new PIDConstants(7, 0.2, 0.5);
 
     public static final int SHOOTER_MOTOR_ID = 46;
     public static final int SHOOTER_IR_PROXIMITY_SENSOR_ID = 1;
