@@ -31,8 +31,8 @@ public class GroupCommands {
         constants: source height
      */
 
-    private ElevatorSystem elevatorSystem;
-    private ShooterSystem shooterSystem;
+    public final ElevatorSystem elevatorSystem;
+    public final ShooterSystem shooterSystem;
     private final Swerve swerve;
     private final GameField gameField;
     private final PathPlanner pathPlanner;
@@ -40,13 +40,25 @@ public class GroupCommands {
 
 
     public GroupCommands(CommandXboxController xboxController, Swerve swerve) {
-        //elevatorSystem = new ElevatorSystem();
-        //shooterSystem = new ShooterSystem();
+        elevatorSystem = new ElevatorSystem();
+        shooterSystem = new ShooterSystem();
         gameField = new GameField();
         pathPlanner = new PathPlanner(swerve);
 
         this.swerve = swerve;
         this.controller = xboxController;
+    }
+
+    public Command resetCommand() {
+        return Commands.defer(Commands::none, Set.of(swerve, shooterSystem, elevatorSystem));
+    }
+
+    public Command shootCommand() {
+        return new ShootCommand(shooterSystem);
+    }
+
+    public Command intakeCommand() {
+        return new IntakeCommand(shooterSystem);
     }
 
     public Command coralOnReefStage(CoralReef stage, GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide ) {
@@ -126,7 +138,7 @@ public class GroupCommands {
     }
 
     public SwerveDriveCommand swerveDrive(boolean fieldDrive){
-        return new SwerveDriveCommand(swerve,controller, fieldDrive);
+        return new SwerveDriveCommand(swerve, controller, fieldDrive);
     }
 
     private double getStageHeight(CoralReef stage) {

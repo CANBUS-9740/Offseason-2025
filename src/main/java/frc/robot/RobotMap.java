@@ -14,7 +14,7 @@ public class RobotMap {
     public static final double SWERVE_DRIVE_MAX_SPEED_MPS = Units.radiansToRotations(SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec) / 6.12 * 0.05;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(2.8, 4, Math.PI, Math.PI);
 
-    public static final int SHOOTER_MOTOR_ID = 28;
+    public static final int SHOOTER_MOTOR_ID = 46;
     public static final int SHOOTER_IR_PROXIMITY_SENSOR_ID = 1;
     public static final double SHOOTER_MOTOR_GEAR_RATIO = 3;
 
@@ -22,7 +22,7 @@ public class RobotMap {
     // add constants here
     // public static final type NAME = value;
     //Elevator system
-    public static final int ELEVATOR_MOTOR = 26;
+    public static final int ELEVATOR_MOTOR = 45;
     public static final double ELEVATOR_P = 0;
     public static final double ELEVATOR_I = 0;
     public static final double ELEVATOR_D = 0;
@@ -35,7 +35,7 @@ public class RobotMap {
     public static final double ELEVATOR_L2_HEIGHT_M = 0.46;
     public static final double ELEVATOR_L3_HEIGHT_M = 0.81;
     public static final double ELEVATOR_L4_HEIGHT_M = 1.21;
-    public static final int ULTRASONIC_SENSOR_PING_PORT=8;
-    public static final int ULTRASONIC_SENSOR_ECHO_PORT = 9;
+    public static final int ULTRASONIC_SENSOR_PING_PORT = 6;
+    public static final int ULTRASONIC_SENSOR_ECHO_PORT = 5;
 
 }

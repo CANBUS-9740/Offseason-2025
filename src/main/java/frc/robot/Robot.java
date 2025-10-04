@@ -14,6 +14,8 @@ import frc.robot.Utils.GameField;
 import frc.robot.Utils.GroupCommands;
 import frc.robot.Utils.PathPlanner;
 import frc.robot.commands.DriveStupid;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -23,27 +25,21 @@ public class Robot extends TimedRobot {
     //private ShooterSystem shooterSystem;
 
     private static Swerve swerveSystem;
-    private CommandXboxController xboxController;
+    private CommandXboxController driverController;
+    private CommandXboxController operationController;
     private SwerveDriveCommand swerveDriveCommand;
 
     private PathPlanner pathPlanner;
     private GroupCommands groupCommands;
 
-    private Ultrasonic ultraSonicSensor;
-    private double startdist;
-    private MedianFilter m_filter=new MedianFilter(5);
-
 
     @Override
     public void robotInit() {
-        ultraSonicSensor =new Ultrasonic(RobotMap.ULTRASONIC_SENSOR_PING_PORT,RobotMap.ULTRASONIC_SENSOR_ECHO_PORT);
-        Ultrasonic.setAutomaticMode(true);
-        startdist=ultraSonicSensor.getRangeMM();
-
         swerveSystem = new Swerve();
-        xboxController = new CommandXboxController(0);
+        driverController = new CommandXboxController(0);
+        operationController = new CommandXboxController(1);
         pathPlanner = new PathPlanner(swerveSystem);
-        groupCommands = new GroupCommands(xboxController, swerveSystem);
+        groupCommands = new GroupCommands(driverController, swerveSystem);
         //init for intake command that activates on an A button press
 //        JoystickButton aButton = new JoystickButton(controller,XboxController.Button.kA.value);
 //        aButton.onTrue(new IntakeCommand(shooterSystem));
@@ -54,40 +50,37 @@ public class Robot extends TimedRobot {
         swerveDriveCommand = groupCommands.swerveDrive(true);
 
         swerveSystem.setDefaultCommand(swerveDriveCommand);
+//
+//        xboxController.a().onTrue(
+//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(1.5, 1.5, new Rotation2d(0))))
+//        );
+//        xboxController.b().onTrue(
+//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(5.5, 2.5, new Rotation2d(0))))
+//        );
+//        xboxController.x().onTrue(
+//                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(3.5, 2.5, new Rotation2d(0))))
+//        );
+//
+//        xboxController.y().onTrue(
+//                new SequentialCommandGroup(
+//                        new InstantCommand(()-> System.out.println("startCommand")),
+//                        pathPlanner.goToClosestReef()
+//                )
+//        );
+//
+//        xboxController.rightBumper().onTrue(
+//                pathPlanner.goToClosestSource()
+//        );
 
-        xboxController.a().onTrue(
-                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(1.5, 1.5, new Rotation2d(0))))
-        );
-        xboxController.b().onTrue(
-                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(5.5, 2.5, new Rotation2d(0))))
-        );
-        xboxController.x().onTrue(
-                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(3.5, 2.5, new Rotation2d(0))))
-        );
+        operationController.pov(0).onTrue(groupCommands.shootCommand());
+        operationController.pov(180).onTrue(groupCommands.intakeCommand());
 
-        xboxController.y().onTrue(
-                new SequentialCommandGroup(
-                        new InstantCommand(()-> System.out.println("startCommand")),
-                        pathPlanner.goToClosestReef()
-                )
-        );
-
-        xboxController.rightBumper().onTrue(
-                pathPlanner.goToClosestSource()
-        );
-
+        driverController.rightBumper().onTrue(groupCommands.resetCommand());
     }
 
     @Override
     public void robotPeriodic() {
-
-        double filter_m=m_filter.calculate(ultraSonicSensor.getRangeMM());
         CommandScheduler.getInstance().run();
-        SmartDashboard.putNumber("distance",filter_m/10);
-        if(ultraSonicSensor.getRangeMM()<startdist/2){SmartDashboard.putBoolean("sensor",true);}
-        else{SmartDashboard.putBoolean("sensor",false);}
-
-
         groupCommands.update();
     }
 
@@ -155,8 +148,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        swerveSystem.swerveDrive.resetOdometry(new Pose2d(0, 0 ,new Rotation2d(0)));
-        new DriveStupid(swerveSystem).schedule();
+        //swerveSystem.swerveDrive.resetOdometry(new Pose2d(0, 0 ,new Rotation2d(0)));
+        //new DriveStupid(swerveSystem).schedule();
+        
     }
 
     @Override

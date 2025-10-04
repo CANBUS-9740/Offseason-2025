@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSystem;
 
 public class ShootCommand extends Command {
+
     private final ShooterSystem shooterSystem;
-    private double startdist;
 
     public ShootCommand(ShooterSystem shooterSystem) {
         this.shooterSystem = shooterSystem;
@@ -14,7 +14,7 @@ public class ShootCommand extends Command {
     }
     @Override
     public void initialize() {
-        startdist = shooterSystem.getDistance();
+
     }
 
     @Override
@@ -24,7 +24,7 @@ public class ShootCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooterSystem.getDistance() >= startdist*3;
+        return !shooterSystem.hasCoral();
     }
 
     @Override

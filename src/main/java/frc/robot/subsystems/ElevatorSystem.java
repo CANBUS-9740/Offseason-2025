@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -38,7 +39,7 @@ public class ElevatorSystem extends SubsystemBase {
         motor.stopMotor();
     }
 
-    public double getHeight(){
+    public double getHeightMeters(){
         return encoder.getPosition() * RobotMap.CIRCUMFERNCE_MM;
     }
 
@@ -47,7 +48,11 @@ public class ElevatorSystem extends SubsystemBase {
     }
 
     public boolean isAtHeight(double targetHeight){
-        return MathUtil.isNear(targetHeight,getHeight(), 0.1);
+        return MathUtil.isNear(targetHeight,getHeightMeters(), 0.1) && motor.getAppliedOutput() < 0.1;
     }
 
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Elevator Height Meters", getHeightMeters());
+    }
 }
