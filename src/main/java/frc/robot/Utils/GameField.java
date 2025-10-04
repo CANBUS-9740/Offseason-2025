@@ -102,6 +102,8 @@ public class GameField {
     private static final double OFFSET_ROBOT = 0.5  ; // (robot length + bumpers) / 2
     private static final double OFFSET_SOURCE_CENTER = 0.2;
 
+    private static final double PRE_TARGET_POSE_REEF_IN_METERS = 0.5; // TODO
+
     private final AprilTagFieldLayout layout;
 
     public GameField() {
@@ -300,5 +302,15 @@ public class GameField {
 
     private static double getAngleToDegrees(Pose2d source, Pose2d target) {
         return AngleUtils.translateAngle(Math.toDegrees(Math.atan2(target.getY() - source.getY(), target.getX() - source.getX())));
+    }
+
+    public Pose2d getPreTargetPose(Pose2d reefPose) {
+        double xDistance = Math.cos(reefPose.getRotation().getRadians()) * PRE_TARGET_POSE_REEF_IN_METERS;
+        double yDistance = Math.sin(reefPose.getRotation().getRadians()) * PRE_TARGET_POSE_REEF_IN_METERS;
+
+        double xPose = reefPose.getX() - xDistance;
+        double yPose = reefPose.getY() - yDistance;
+
+        return new Pose2d(xPose, yPose, reefPose.getRotation());
     }
 }

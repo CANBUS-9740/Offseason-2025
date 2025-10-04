@@ -5,22 +5,22 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class ElevatorSystem extends SubsystemBase {
-    private final SparkMax motorMaster;
-    private final SparkMax motorFollow;
+    private final SparkMax motor;
     private final RelativeEncoder encoder;
     private double targetHeight;
 
 
     public ElevatorSystem() {
-        motorMaster = new SparkMax(RobotMap.ELEVATOR_MASTER_MOTOR, SparkLowLevel.MotorType.kBrushless);
-        motorFollow = new SparkMax(RobotMap.ELEVATOR_FOLLOW_MOTOR, SparkLowLevel.MotorType.kBrushless);
-        encoder = motorMaster.getEncoder();
+        motor = new SparkMax(RobotMap.ELEVATOR_MOTOR, SparkLowLevel.MotorType.kBrushless);
+        encoder = motor.getEncoder();
 
         SparkMaxConfig configMaster = new SparkMaxConfig();
         configMaster.closedLoop
@@ -29,28 +29,31 @@ public class ElevatorSystem extends SubsystemBase {
                 .d(RobotMap.ELEVATOR_D)
                 .velocityFF(RobotMap.ELEVATOR_FF);
         configMaster.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
-        configMaster.encoder.positionConversionFactor(1 / RobotMap.GEAR_RATIO_ELEVATOR);
-        motorMaster.configure(configMaster, SparkBase.ResetMode.kResetSafeParameters , SparkBase.PersistMode.kNoPersistParameters);
-
-        SparkMaxConfig configFollow = new SparkMaxConfig();
-        configFollow.follow(motorMaster).inverted(true);
-        motorFollow.configure(configFollow, SparkBase.ResetMode.kResetSafeParameters , SparkBase.PersistMode.kNoPersistParameters);
+        configMaster.encoder
+                .positionConversionFactor(1 / RobotMap.GEAR_RATIO_ELEVATOR)
+                .velocityConversionFactor(1 / RobotMap.GEAR_RATIO_ELEVATOR);
+        configMaster.idleMode(SparkBaseConfig.IdleMode.kBrake);
+        motor.configure(configMaster, SparkBase.ResetMode.kResetSafeParameters , SparkBase.PersistMode.kNoPersistParameters);
     }
 
     public void stop() {
-        motorMaster.stopMotor();
+        motor.stopMotor();
     }
 
-    public double getHeight(){
+    public double getHeightMeters(){
         return encoder.getPosition() * RobotMap.CIRCUMFERNCE_MM;
     }
 
     public void moveToHeight(double targetHeight){
-        motorMaster.getClosedLoopController().setReference(targetHeight / RobotMap.CIRCUMFERNCE_MM, SparkBase.ControlType.kPosition);
+        motor.getClosedLoopController().setReference(targetHeight / RobotMap.CIRCUMFERNCE_MM, SparkBase.ControlType.kPosition);
     }
 
     public boolean isAtHeight(double targetHeight){
-        return MathUtil.isNear(targetHeight,getHeight(), 0.1);
+        return MathUtil.isNear(targetHeight,getHeightMeters(), 0.1) && motor.getAppliedOutput() < 0.1;
     }
 
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Elevator Height Meters", getHeightMeters());
+    }
 }
