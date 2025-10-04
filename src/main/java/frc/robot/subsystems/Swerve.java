@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.RobotMap;
 import org.json.simple.parser.ParseException;
 import swervelib.SwerveDrive;
@@ -42,6 +43,10 @@ public class Swerve extends SubsystemBase {
 //        swerveDrive.resetOdometry(new Pose2d(new Translation2d(2.164, 6.271), new Rotation2d(0)));
 
         autoBuilderConfiguration();
+    }
+
+    public void addVisionMeasurement(LimelightHelpers.PoseEstimate poseEstimate){
+        swerveDrive.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
     }
 
     public void driveFieldRelative(double translationX, double translationY, double angularRotationX) {
