@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,11 +29,11 @@ public class ElevatorSystem extends SubsystemBase {
                 .d(RobotMap.ELEVATOR_D)
                 .velocityFF(RobotMap.ELEVATOR_FF);
         configMaster.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
-        configMaster.encoder.positionConversionFactor(1 / RobotMap.GEAR_RATIO_ELEVATOR);
+        configMaster.encoder
+                .positionConversionFactor(1 / RobotMap.GEAR_RATIO_ELEVATOR)
+                .velocityConversionFactor(1 / RobotMap.GEAR_RATIO_ELEVATOR);
+        configMaster.idleMode(SparkBaseConfig.IdleMode.kBrake);
         motor.configure(configMaster, SparkBase.ResetMode.kResetSafeParameters , SparkBase.PersistMode.kNoPersistParameters);
-
-        SparkMaxConfig configFollow = new SparkMaxConfig();
-        configFollow.follow(motor).inverted(true);
     }
 
     public void stop() {

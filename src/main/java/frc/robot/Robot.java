@@ -19,6 +19,8 @@ import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import java.util.Set;
+
 public class Robot extends TimedRobot {
     //private XboxController controller;
     //private ShooterSystem shooterSystem;
@@ -73,6 +75,33 @@ public class Robot extends TimedRobot {
 
         operationController.pov(0).onTrue(groupCommands.shootCommand());
         operationController.pov(180).onTrue(groupCommands.intakeCommand());
+
+
+        operationController.a().onTrue(
+                Commands.defer(() -> {
+                    double currentHeight = groupCommands.elevatorSystem.getHeightMeters();
+                    double newHeight = currentHeight + 0.05;
+
+                    if (newHeight > RobotMap.ELEVATOR_MAX_HEIGHT_M) {
+                        return Commands.none();
+                    }
+
+                    return groupCommands.goToHeightCommand(newHeight);
+                }, Set.of())
+        );
+
+        operationController.b().onTrue(
+                Commands.defer(() -> {
+                    double currentHeight = groupCommands.elevatorSystem.getHeightMeters();
+                    double newHeight = currentHeight - 0.05;
+
+                    if (newHeight < RobotMap.ELEVATOR_MIN_HEIGHT_M) {
+                        return Commands.none();
+                    }
+
+                    return groupCommands.goToHeightCommand(newHeight);
+                }, Set.of())
+        );
 
         driverController.rightBumper().onTrue(groupCommands.resetCommand());
     }

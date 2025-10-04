@@ -50,7 +50,7 @@ public class GroupCommands {
     }
 
     public Command resetCommand() {
-        return Commands.defer(Commands::none, Set.of(swerve, shooterSystem, elevatorSystem));
+        return Commands.defer(() -> new InstantCommand(() -> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)), Set.of(swerve, shooterSystem, elevatorSystem));
     }
 
     public Command shootCommand() {
@@ -74,13 +74,13 @@ public class GroupCommands {
                         new ParallelCommandGroup(
                                 pathPlanner.goToClosestReef(),
                                 new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
-                                Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(elevatorHeight))
+                                Commands.waitUntil(elevatorMoveCommand::getIsNear)
                         ),
                         new ShootCommand(shooterSystem),
                         new ParallelCommandGroup(
                                 pathPlanner.goToPreTargetClosestReefPose(),
-                                new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_L1_HEIGHT_M)),
-                                Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.ELEVATOR_L1_HEIGHT_M))
+                                new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                                Commands.waitUntil(elevatorMoveCommand::getIsNear)
                         )
                 );
             }
@@ -90,13 +90,13 @@ public class GroupCommands {
                     new ParallelCommandGroup(
                             pathPlanner.goToClosestReef(),
                             new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
-                            Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(elevatorHeight))
+                            Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     ),
                     new ShootCommand(shooterSystem),
                     new ParallelCommandGroup(
                             pathPlanner.goToPreTargetClosestReefPose(),
-                            new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_L1_HEIGHT_M)),
-                            Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.ELEVATOR_L1_HEIGHT_M))
+                            new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                            Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     )
             );
         }, Set.of(elevatorSystem, shooterSystem, swerve));
@@ -116,13 +116,13 @@ public class GroupCommands {
                     new ParallelCommandGroup(
                             pathPlanner.goToClosestReef(),
                             new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
-                            Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(elevatorHeight))
+                            Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     ),
                     new ShootCommand(shooterSystem),
                     new ParallelCommandGroup(
                             pathPlanner.goToPreTargetClosestReefPose(),
-                            new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_L1_HEIGHT_M)),
-                            Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.ELEVATOR_L1_HEIGHT_M))
+                            new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                            Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     )
 
             );
@@ -138,16 +138,20 @@ public class GroupCommands {
                 return new SequentialCommandGroup(
                         pathPlanner.goToPoseSource(sourceStand,sourceStandSide),
                         new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.SOURCE_HEIGHT)),
-                        Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.SOURCE_HEIGHT)),
-                        new IntakeCommand(shooterSystem)
+                        Commands.waitUntil(elevatorMoveCommand::getIsNear),
+                        new IntakeCommand(shooterSystem),
+                        new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                        Commands.waitUntil(elevatorMoveCommand::getIsNear)
                 );
             }
 
             return new SequentialCommandGroup(
                     pathPlanner.goToSourcePathFind(sourceStand,sourceStandSide),
                     new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.SOURCE_HEIGHT)),
-                    Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.SOURCE_HEIGHT)),
-                    new IntakeCommand(shooterSystem)
+                    Commands.waitUntil(elevatorMoveCommand::getIsNear),
+                    new IntakeCommand(shooterSystem),
+                    new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                    Commands.waitUntil(elevatorMoveCommand::getIsNear)
             );
         }, Set.of(elevatorSystem, shooterSystem, swerve));
     }
@@ -162,8 +166,10 @@ public class GroupCommands {
             return new SequentialCommandGroup(
                     pathPlanner.goToClosestSource(),
                     new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.SOURCE_HEIGHT)),
-                    Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.SOURCE_HEIGHT)),
-                    new IntakeCommand(shooterSystem)
+                    Commands.waitUntil(elevatorMoveCommand::getIsNear),
+                    new IntakeCommand(shooterSystem),
+                    new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                    Commands.waitUntil(elevatorMoveCommand::getIsNear)
             );
         }, Set.of(elevatorSystem, shooterSystem, swerve));
 
@@ -174,20 +180,20 @@ public class GroupCommands {
     public Command teleopCoralOnReef(double elevatorHeight){
         return new SequentialCommandGroup(
                 new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
-                Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(elevatorHeight)),
+                Commands.waitUntil(elevatorMoveCommand::getIsNear),
                 Commands.waitUntil(controller.a().onTrue(new ShootCommand(shooterSystem))),
-                new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_L1_HEIGHT_M)),
-                Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.ELEVATOR_L1_HEIGHT_M))
+                new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                Commands.waitUntil(elevatorMoveCommand::getIsNear)
 
         );
     }
-    public Command teleopGetCoralFromSource(double elevatorHeight){
+    public Command teleopGetCoralFromSource(){
         return new SequentialCommandGroup(
                 new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.SOURCE_HEIGHT)),
-                Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.SOURCE_HEIGHT)),
+                Commands.waitUntil(elevatorMoveCommand::getIsNear),
                 Commands.waitUntil(controller.b().onTrue(new IntakeCommand(shooterSystem))),
-                new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_L1_HEIGHT_M)),
-                Commands.waitUntil(()-> elevatorMoveCommand.getIsNear(RobotMap.ELEVATOR_L1_HEIGHT_M))
+                new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                Commands.waitUntil(elevatorMoveCommand::getIsNear)
         );
     }
 
@@ -213,7 +219,7 @@ public class GroupCommands {
                 elevatorHeight = RobotMap.ELEVATOR_L4_HEIGHT_M;
                 break;
             default:
-                elevatorHeight = RobotMap.ELEVATOR_L1_HEIGHT_M;
+                elevatorHeight = RobotMap.ELEVATOR_PARKING_HEIGHT_M;
                 break;
         }
 
@@ -224,4 +230,9 @@ public class GroupCommands {
         pathPlanner.update();
     }
 
+
+
+    public Command goToHeightCommand(double height) {
+        return new InstantCommand(() -> elevatorMoveCommand.setTargetHeight(height));
+    }
 }
