@@ -97,9 +97,9 @@ public class GameField {
             .mapToInt((stand)-> stand.aprilTagIdRed)
             .toArray();
 
-    private static final double OFFSET_ON_STAND_REEF = 0.145; //0.328676 / 2; TODO
+    private static final double OFFSET_ON_STAND_REEF = 0.1; //0.328676 / 2; TODO
     private static final double OFFSET_ON_STAND_SOURCE = 0.6575; // TODO
-    private static final double OFFSET_ROBOT = 0.5  ; // (robot length + bumpers) / 2
+    private static final double OFFSET_ROBOT = 0.47  ; // (robot length + bumpers) / 2
     private static final double OFFSET_SOURCE_CENTER = 0.2;
 
     private static final double PRE_TARGET_POSE_REEF_IN_METERS = 0.5; // TODO
@@ -224,7 +224,7 @@ public class GameField {
         }
 
         double newRotation = (180 + pose.getRotation().getDegrees()) % 360;
-        return new Pose2d(calculatedPose.getX(), calculatedPose.getY(), Rotation2d.fromDegrees(newRotation));
+        return new Pose2d(calculatedPose.getX(), calculatedPose.getY(), Rotation2d.fromDegrees(newRotation).plus(Rotation2d.fromDegrees(180)));
     }
 
     public Pose2d getPoseToProcessor() {

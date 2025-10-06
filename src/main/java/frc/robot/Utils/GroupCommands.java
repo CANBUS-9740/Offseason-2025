@@ -35,7 +35,7 @@ public class GroupCommands {
     private final GameField gameField;
     private final PathPlanner pathPlanner;
     private final CommandXboxController controller;
-    private final ElevatorMoveCommand elevatorMoveCommand;
+    public final ElevatorMoveCommand elevatorMoveCommand;
 
 
     public GroupCommands(CommandXboxController xboxController, Swerve swerve) {
@@ -66,14 +66,15 @@ public class GroupCommands {
 
         return Commands.defer(() -> {
 
-            if(shooterSystem.hasCoral()){
+            if(!shooterSystem.hasCoral()){
                 return  Commands.none();
             } else if (GameField.getDistanceToMeters(swerve.getPose(), gameField.getPoseForReefStand(reefStand, reefStandSide)) < 0.3) {
                 return new SequentialCommandGroup(
                         pathPlanner.goToPreTargetReefPose(reefStand, reefStandSide),
                         new ParallelCommandGroup(
-                                pathPlanner.goToClosestReef(),
+                                pathPlanner.goToPoseReef(reefStand, reefStandSide),
                                 new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
+                                new InstantCommand(() -> System.out.println("biatch")),
                                 Commands.waitUntil(elevatorMoveCommand::getIsNear)
                         ),
                         new ShootCommand(shooterSystem),
@@ -88,7 +89,8 @@ public class GroupCommands {
             return new SequentialCommandGroup(
                     pathPlanner.goToPreTargetReefPose(reefStand, reefStandSide),
                     new ParallelCommandGroup(
-                            pathPlanner.goToClosestReef(),
+                            pathPlanner.goToPoseReef(reefStand, reefStandSide),
+                            new InstantCommand(() -> System.out.println("biatch " + elevatorHeight)),
                             new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
                             Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     ),
@@ -99,7 +101,7 @@ public class GroupCommands {
                             Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     )
             );
-        }, Set.of(elevatorSystem, shooterSystem, swerve));
+        }, Set.of(shooterSystem, swerve));
     }
 
     public Command coralOnClosestReefStage(CoralReef stage) {
@@ -107,7 +109,7 @@ public class GroupCommands {
 
         return Commands.defer(() -> {
 
-            if(shooterSystem.hasCoral() || !pathPlanner.closestReefIsPresent()){
+            if(!shooterSystem.hasCoral() || !pathPlanner.closestReefIsPresent()){
                 return  Commands.none();
             }
 
@@ -132,7 +134,7 @@ public class GroupCommands {
     public Command GetCoralFromSource(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
         return Commands.defer(() -> {
 
-            if(!shooterSystem.hasCoral()){
+            if(shooterSystem.hasCoral()){
                 return  Commands.none();
             } else if (GameField.getDistanceToMeters(swerve.getPose(), gameField.getPoseForSource(sourceStand, sourceStandSide)) < 0.3) {
                 return new SequentialCommandGroup(
@@ -159,7 +161,7 @@ public class GroupCommands {
     public Command getCoralFromClosestSource() {
         return Commands.defer(() -> {
 
-            if(!shooterSystem.hasCoral() || !pathPlanner.closestSourceIsPresent()){
+            if(shooterSystem.hasCoral() || !pathPlanner.closestSourceIsPresent()){
                 return  Commands.none();
             }
 
@@ -201,6 +203,8 @@ public class GroupCommands {
     public SwerveDriveCommand swerveDrive(boolean fieldDrive){
         return new SwerveDriveCommand(swerve, controller, fieldDrive);
     }
+
+
 
     private double getStageHeight(CoralReef stage) {
         double elevatorHeight;

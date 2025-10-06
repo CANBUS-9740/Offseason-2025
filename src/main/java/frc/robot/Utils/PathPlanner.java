@@ -5,6 +5,7 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,7 +53,10 @@ public class PathPlanner {
             path.preventFlipping = true;
 
             return new SequentialCommandGroup(
-                    Commands.runOnce(()-> isInAutoMovement = true),
+                    Commands.runOnce(()-> {
+                        isInAutoMovement = true;
+                        swerve.getField().getObject("Target").setPose(pose);
+                    }),
                     AutoBuilder.followPath(path),
                     Commands.runOnce(()-> isInAutoMovement = false)
             );
@@ -108,10 +112,12 @@ public class PathPlanner {
             Optional<GameField.SelectedSourceStand> closestSource = gameField.getClosestSourceTo(swerve.getPose());
 
             if (closestSource.isEmpty()) {
+                System.out.println("bla bla");
                 return Commands.none();
             }
 
             GameField.SelectedSourceStand source = closestSource.get();
+            System.out.println("fuck this");
             return goToPoseSource(source.stand, source.side);
         }, Set.of(swerve));
     }
