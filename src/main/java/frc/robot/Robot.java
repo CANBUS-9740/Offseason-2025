@@ -77,47 +77,77 @@ public class Robot extends TimedRobot {
 //        xboxController.x().onTrue(
 //                new InstantCommand(()-> swerveSystem.resetPose(new Pose2d(3.5, 2.5, new Rotation2d(0))))
 //        );
-//
-        operationController.a(gameLoop).onTrue(
-//                new SequentialCommandGroup(
-//                        new InstantCommand(()-> System.out.println("startCommand")),
-//                        pathPlanner.goToPreTargetReefPose(GameField.ReefStand.STAND_5, GameField.ReefStandSide.LEFT),
-//                        pathPlanner.goToPoseReef(GameField.ReefStand.STAND_5, GameField.ReefStandSide.LEFT)
-//                )
-                groupCommands.coralOnReefStage(CoralReef.SECOND_STAGE, GameField.ReefStand.STAND_5, GameField.ReefStandSide.LEFT)
-        );
-//
-        operationController.pov(0, 90, gameLoop).onTrue(
-                pathPlanner.goToPoseSource(GameField.SourceStand.RIGHT, GameField.SourceStandSide.CENTER)
-       );
-//
-//        operationController.a(gameLoop).onTrue(
-//                groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L1_HEIGHT_M)
-//        );
 
-        operationController.b(gameLoop).onTrue(
+
+        //driver regular teleop
+        driverController.a(gameLoop).onTrue(
+                groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L1_HEIGHT_M)
+        );
+
+        driverController.b(gameLoop).onTrue(
                 groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L2_HEIGHT_M)
         );
 
-        operationController.y(gameLoop).onTrue(
+        driverController.y(gameLoop).onTrue(
                 groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L3_HEIGHT_M)
         );
 
-        operationController.x(gameLoop).onTrue(
+        driverController.x(gameLoop).onTrue(
                 groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L4_HEIGHT_M)
         );
 
-        operationController.rightBumper(gameLoop).onTrue(
+        driverController.rightBumper(gameLoop).onTrue(
                 groupCommands.goToHeightCommand(RobotMap.ELEVATOR_PARKING_HEIGHT_M)
         );
 
-        operationController.pov(0, 0, gameLoop).onTrue(groupCommands.shootCommand());
-        operationController.pov(0, 180, gameLoop).onTrue(groupCommands.intakeCommand());
+        driverController.pov(0, 0, gameLoop).onTrue(groupCommands.shootCommand());
+        driverController.pov(0, 180, gameLoop).onTrue(groupCommands.intakeCommand());
 
 
-        operationController.pov(0, 0, testLoop).onTrue(groupCommands.shootCommand());
-        operationController.pov(0, 180, testLoop).onTrue(groupCommands.intakeCommand());
+        //operator pre target teleop
 
+        operationController.a(gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.PODIUM, GameField.ReefStandSide.RIGHT)
+        );
+
+        operationController.b(gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.FIRST_STAGE, GameField.ReefStandSide.RIGHT)
+        );
+
+        operationController.x(gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.SECOND_STAGE, GameField.ReefStandSide.RIGHT)
+        );
+
+        operationController.y(gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.THIRD_STAGE, GameField.ReefStandSide.RIGHT)
+        );
+
+        operationController.pov(0).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.PODIUM, GameField.ReefStandSide.LEFT)
+        );
+
+        operationController.pov(90).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.FIRST_STAGE, GameField.ReefStandSide.LEFT)
+        );
+
+        operationController.pov(180).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.SECOND_STAGE, GameField.ReefStandSide.LEFT)
+        );
+
+        operationController.pov(270).onTrue(
+                groupCommands.coralOnClosestReefStage(CoralReef.THIRD_STAGE, GameField.ReefStandSide.LEFT)
+        );
+
+       operationController.rightBumper(gameLoop).onTrue(
+               groupCommands.getCoralFromClosestSource(GameField.SourceStandSide.CENTER)
+       );
+
+        operationController.leftBumper(gameLoop).onTrue(
+                groupCommands.getCoralFromClosestSource(GameField.SourceStandSide.LEFT)
+        );
+
+
+        //operator test heights
         operationController.a(testLoop).onTrue(
                 Commands.defer(() -> {
                     double currentHeight = groupCommands.elevatorSystem.getHeightMeters();
@@ -170,8 +200,11 @@ public class Robot extends TimedRobot {
                 }, Set.of())
         );
 
-        operationController.leftBumper(testLoop).onTrue(groupCommands.resetCommand());
-        operationController.leftBumper(gameLoop).onTrue(groupCommands.resetCommand());
+
+        //driver reset commands
+
+        driverController.leftBumper(testLoop).onTrue(groupCommands.resetCommand());
+        driverController.leftBumper(gameLoop).onTrue(groupCommands.resetCommand());
     }
 
     @Override

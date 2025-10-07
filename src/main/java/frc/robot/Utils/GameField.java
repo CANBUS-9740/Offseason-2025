@@ -111,7 +111,7 @@ public class GameField {
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
     }
 
-    public Optional<SelectedReefStand> findBestReefStandTo(Pose2d targetPose, boolean considerAngle) {
+    public Optional<SelectedReefStand> findBestReefStandTo(Pose2d targetPose, ReefStandSide reefStandSide, boolean considerAngle) {
         DriverStation.Alliance alliance = getCurrentAlliance();
         double targetHeading = AngleUtils.translateAngle(targetPose.getRotation().getDegrees());
 
@@ -141,10 +141,10 @@ public class GameField {
             return Optional.empty();
         }
 
-        return Optional.of(new SelectedReefStand(bestStand, bestSide, bestPose));
+        return Optional.of(new SelectedReefStand(bestStand, reefStandSide, bestPose));
     }
 
-    public Optional<SelectedSourceStand> getClosestSourceTo(Pose2d targetPose) {
+    public Optional<SelectedSourceStand> getClosestSourceTo(Pose2d targetPose, SourceStandSide sourceStandSide) {
         DriverStation.Alliance alliance = getCurrentAlliance();
 
         double bestDistance = -1;
@@ -170,7 +170,7 @@ public class GameField {
             return Optional.empty();
         }
 
-        return Optional.of(new SelectedSourceStand(bestStand, bestSide, bestPose));
+        return Optional.of(new SelectedSourceStand(bestStand, sourceStandSide, bestPose));
     }
 
     public Pose2d getPoseForReefStand(ReefStand stand, ReefStandSide side) {
