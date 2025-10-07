@@ -1,6 +1,5 @@
 package frc.robot.Utils;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap;
@@ -53,8 +52,8 @@ public class GroupCommands {
         return Commands.defer(() -> new InstantCommand(() -> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)), Set.of(swerve, shooterSystem, elevatorSystem));
     }
 
-    public Command shootCommand() {
-        return new ShootCommand(shooterSystem);
+    public Command shootCommand(double power) {
+        return new ShootCommand(shooterSystem, power);
     }
 
     public Command intakeCommand() {
@@ -63,6 +62,13 @@ public class GroupCommands {
 
     public Command coralOnReefStage(CoralReef stage, GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide ) {
         double elevatorHeight = getStageHeight(stage);
+        double shooterSpeed;
+
+        if (elevatorHeight == RobotMap.ELEVATOR_L1_HEIGHT_M) {
+            shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_LOWER_SPEED;
+        } else {
+            shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED;
+        }
 
         return Commands.defer(() -> {
 
@@ -77,7 +83,7 @@ public class GroupCommands {
                                 new InstantCommand(() -> System.out.println("biatch")),
                                 Commands.waitUntil(elevatorMoveCommand::getIsNear)
                         ),
-                        new ShootCommand(shooterSystem),
+                        new ShootCommand(shooterSystem, shooterSpeed),
                         new ParallelCommandGroup(
                                 pathPlanner.goToPreTargetReefPose(reefStand, reefStandSide),
                                 new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
@@ -94,7 +100,7 @@ public class GroupCommands {
                             new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
                             Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     ),
-                    new ShootCommand(shooterSystem),
+                    new ShootCommand(shooterSystem, shooterSpeed),
                     new ParallelCommandGroup(
                             pathPlanner.goToPreTargetReefPose(reefStand, reefStandSide),
                             new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
@@ -104,25 +110,67 @@ public class GroupCommands {
         }, Set.of(shooterSystem, swerve));
     }
 
-    public Command coralOnClosestReefStage(CoralReef stage, GameField.ReefStandSide reefStandSide) {
-        double elevatorHeight = getStageHeight(stage);
+    public Command coralOnClosestReefStageLeft(CoralReef stage) {
+        return Commands.defer(() -> {
+            double elevatorHeight = getStageHeight(stage);
+            double shooterSpeed;
+
+            if (elevatorHeight == RobotMap.ELEVATOR_L1_HEIGHT_M) {
+                shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_LOWER_SPEED;
+            } else {
+                shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED;
+            }
+
+            if(!shooterSystem.hasCoral() || !pathPlanner.closestReefIsPresent(GameField.ReefStandSide.LEFT)){
+                return Commands.none();
+            }
+
+            return new SequentialCommandGroup(
+                    new InstantCommand(()-> System.out.println("gigi")),
+                    pathPlanner.goToPreTargetClosestReefPose(GameField.ReefStandSide.LEFT),
+                    new ParallelCommandGroup(
+                            pathPlanner.goToClosestReef(GameField.ReefStandSide.LEFT),
+                            new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
+                            Commands.waitUntil(elevatorMoveCommand::getIsNear)
+                    ),
+                    new ShootCommand(shooterSystem, shooterSpeed),
+                    new ParallelCommandGroup(
+                            pathPlanner.goToPreTargetClosestReefPose(GameField.ReefStandSide.LEFT),
+                            new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
+                            Commands.waitUntil(elevatorMoveCommand::getIsNear)
+                    )
+
+            );
+        }, Set.of(elevatorSystem, shooterSystem, swerve));
+    }
+
+    public Command coralOnClosestReefStageRight(CoralReef stage) {
 
         return Commands.defer(() -> {
 
-            if(!shooterSystem.hasCoral() || !pathPlanner.closestReefIsPresent(reefStandSide)){
+            double elevatorHeight = getStageHeight(stage);
+            double shooterSpeed;
+
+            if (elevatorHeight == RobotMap.ELEVATOR_L1_HEIGHT_M) {
+                shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_LOWER_SPEED;
+            } else {
+                shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED;
+            }
+
+            if(!shooterSystem.hasCoral() || !pathPlanner.closestReefIsPresent(GameField.ReefStandSide.RIGHT)){
                 return  Commands.none();
             }
 
             return new SequentialCommandGroup(
-                    pathPlanner.goToPreTargetClosestReefPose(reefStandSide),
+                    pathPlanner.goToPreTargetClosestReefPose(GameField.ReefStandSide.RIGHT),
                     new ParallelCommandGroup(
-                            pathPlanner.goToClosestReef(reefStandSide),
+                            pathPlanner.goToClosestReef(GameField.ReefStandSide.RIGHT),
                             new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
                             Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     ),
-                    new ShootCommand(shooterSystem),
+                    new ShootCommand(shooterSystem, shooterSpeed),
                     new ParallelCommandGroup(
-                            pathPlanner.goToPreTargetClosestReefPose(reefStandSide),
+                            pathPlanner.goToPreTargetClosestReefPose(GameField.ReefStandSide.RIGHT),
                             new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
                             Commands.waitUntil(elevatorMoveCommand::getIsNear)
                     )
@@ -180,10 +228,18 @@ public class GroupCommands {
     //Teleop command groups
 
     public Command teleopCoralOnReef(double elevatorHeight){
+        double shooterSpeed;
+
+        if (elevatorHeight == RobotMap.ELEVATOR_L1_HEIGHT_M) {
+            shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_LOWER_SPEED;
+        } else {
+            shooterSpeed = RobotMap.SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED;
+        }
+
         return new SequentialCommandGroup(
                 new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(elevatorHeight)),
                 Commands.waitUntil(elevatorMoveCommand::getIsNear),
-                Commands.waitUntil(controller.a().onTrue(new ShootCommand(shooterSystem))),
+                Commands.waitUntil(controller.a().onTrue(new ShootCommand(shooterSystem, shooterSpeed))),
                 new InstantCommand(()-> elevatorMoveCommand.setTargetHeight(RobotMap.ELEVATOR_PARKING_HEIGHT_M)),
                 Commands.waitUntil(elevatorMoveCommand::getIsNear)
 

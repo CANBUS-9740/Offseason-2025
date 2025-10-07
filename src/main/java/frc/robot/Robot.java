@@ -1,11 +1,8 @@
 package frc.robot;
 
-import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,12 +42,13 @@ public class Robot extends TimedRobot {
         gameLoop = new EventLoop();
         testLoop = new EventLoop();
         CommandScheduler.getInstance().setActiveButtonLoop(gameLoop);
+        SmartDashboard.putString("activeButtonLoop: ", "gameLoop");
 
         swerveSystem = new Swerve();
         driverController = new CommandXboxController(0);
         operationController = new CommandXboxController(1);
         pathPlanner = new PathPlanner(swerveSystem);
-        groupCommands = new GroupCommands(operationController, swerveSystem);
+        groupCommands = new GroupCommands(driverController, swerveSystem);
         limelight = new Limelight("limelight-edi");
         //init for intake command that activates on an A button press
 //        JoystickButton aButton = new JoystickButton(controller,XboxController.Button.kA.value);
@@ -100,42 +98,68 @@ public class Robot extends TimedRobot {
                 groupCommands.goToHeightCommand(RobotMap.ELEVATOR_PARKING_HEIGHT_M)
         );
 
-        driverController.pov(0, 0, gameLoop).onTrue(groupCommands.shootCommand());
+        driverController.a(testLoop).onTrue(
+                groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L1_HEIGHT_M)
+        );
+
+        driverController.b(testLoop).onTrue(
+                groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L2_HEIGHT_M)
+        );
+
+        driverController.y(testLoop).onTrue(
+                groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L3_HEIGHT_M)
+        );
+
+        driverController.x(testLoop).onTrue(
+                groupCommands.goToHeightCommand(RobotMap.ELEVATOR_L4_HEIGHT_M)
+        );
+
+        driverController.rightBumper(testLoop).onTrue(
+                groupCommands.goToHeightCommand(RobotMap.ELEVATOR_PARKING_HEIGHT_M)
+        );
+
+        driverController.pov(0, 0, gameLoop).onTrue(groupCommands.shootCommand(RobotMap.SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED));
         driverController.pov(0, 180, gameLoop).onTrue(groupCommands.intakeCommand());
 
+        driverController.pov(0, 0, testLoop).onTrue(groupCommands.shootCommand(RobotMap.SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED));
+        driverController.pov(0, 180, testLoop).onTrue(groupCommands.intakeCommand());
+
+
+        driverController.pov(0, 270, gameLoop).onTrue(groupCommands.shootCommand(RobotMap.SHOOTER_MOTOR_OUTTAKE_LOWER_SPEED));
+        driverController.pov(0, 270, testLoop).onTrue(groupCommands.shootCommand(RobotMap.SHOOTER_MOTOR_OUTTAKE_LOWER_SPEED));
 
         //operator pre target teleop
 
         operationController.a(gameLoop).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.PODIUM, GameField.ReefStandSide.RIGHT)
+                groupCommands.coralOnClosestReefStageRight(CoralReef.PODIUM)
         );
 
         operationController.b(gameLoop).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.FIRST_STAGE, GameField.ReefStandSide.RIGHT)
+                groupCommands.coralOnClosestReefStageRight(CoralReef.FIRST_STAGE)
         );
 
         operationController.x(gameLoop).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.SECOND_STAGE, GameField.ReefStandSide.RIGHT)
+                groupCommands.coralOnClosestReefStageRight(CoralReef.SECOND_STAGE)
         );
 
         operationController.y(gameLoop).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.THIRD_STAGE, GameField.ReefStandSide.RIGHT)
+                groupCommands.coralOnClosestReefStageRight(CoralReef.THIRD_STAGE)
         );
 
-        operationController.pov(0).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.PODIUM, GameField.ReefStandSide.LEFT)
+        operationController.pov(0, 180, gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStageLeft(CoralReef.PODIUM)
         );
 
-        operationController.pov(90).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.FIRST_STAGE, GameField.ReefStandSide.LEFT)
+        operationController.pov(0, 90, gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStageLeft(CoralReef.FIRST_STAGE)
         );
 
-        operationController.pov(180).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.SECOND_STAGE, GameField.ReefStandSide.LEFT)
+        operationController.pov(0, 0, gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStageLeft(CoralReef.SECOND_STAGE)
         );
 
-        operationController.pov(270).onTrue(
-                groupCommands.coralOnClosestReefStage(CoralReef.THIRD_STAGE, GameField.ReefStandSide.LEFT)
+        operationController.pov(0, 270, gameLoop).onTrue(
+                groupCommands.coralOnClosestReefStageLeft(CoralReef.THIRD_STAGE)
         );
 
        operationController.rightBumper(gameLoop).onTrue(
@@ -211,6 +235,11 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         groupCommands.update();
+        if (CommandScheduler.getInstance().getActiveButtonLoop() == gameLoop) {
+            SmartDashboard.putString("activeButtonLoop: ", "gameLoop");
+        } else {
+            SmartDashboard.putString("activeButtonLoop: ", "testLoop");
+        }
 
         Optional<LimelightHelpers.PoseEstimate> poseEstimateOptional = limelight.getPose();
         if(poseEstimateOptional.isPresent()){

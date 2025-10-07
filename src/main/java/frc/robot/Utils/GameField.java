@@ -57,7 +57,7 @@ public class GameField {
 
     public static class SelectedReefStand {
         public final ReefStand stand;
-        public final ReefStandSide side;
+        public ReefStandSide side;
         public final Pose2d pose;
 
         public SelectedReefStand(ReefStand stand, ReefStandSide side, Pose2d pose) {

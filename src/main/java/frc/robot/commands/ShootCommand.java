@@ -10,10 +10,13 @@ public class ShootCommand extends Command {
 
     private final ShooterSystem shooterSystem;
     private final Timer timer;
+    private final double power;
 
-    public ShootCommand(ShooterSystem shooterSystem) {
+    public ShootCommand(ShooterSystem shooterSystem, double power) {
         this.shooterSystem = shooterSystem;
+        this.power = power;
         timer = new Timer();
+
         addRequirements(shooterSystem);
 
     }
@@ -24,7 +27,7 @@ public class ShootCommand extends Command {
 
     @Override
     public void execute() {
-        shooterSystem.motorMove(5);
+        shooterSystem.motorMove(power);
         if (!shooterSystem.hasCoral()) {
             timer.start();
         }

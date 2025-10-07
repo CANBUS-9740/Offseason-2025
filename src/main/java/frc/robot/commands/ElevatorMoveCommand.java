@@ -33,9 +33,11 @@ public class ElevatorMoveCommand extends Command {
     public void execute() {
         if (setNewTarget) {
             setNewTarget = false;
+            System.out.println("nono");
 
             if (targetHeight == RobotMap.ELEVATOR_PARKING_HEIGHT_M && getIsNear()) {
                 elevator.stop();
+                System.out.println("parkingMode");
             } else {
                 motionProfile = new TrapezoidProfile(RobotMap.ELEVATOR_MOTION_PROFILE_CONSTRAINTS);
                 motionProfileGoal = new TrapezoidProfile.State(targetHeight, 0);
@@ -53,9 +55,11 @@ public class ElevatorMoveCommand extends Command {
             } else {
                 // if we've reached our position, just set the PID to the setpoint and let it and the FF hold the elevator in position.
                 elevator.moveToHeight(targetHeight);
+                System.out.println("stopi");
             }
         } else {
             // if we are still on our way to the target height, continue running the motion profile
+            System.out.println("go");
             motionProfileSetPoint = motionProfile.calculate(0.02, motionProfileSetPoint, motionProfileGoal);
             elevator.moveToHeight(motionProfileSetPoint.position);
         }

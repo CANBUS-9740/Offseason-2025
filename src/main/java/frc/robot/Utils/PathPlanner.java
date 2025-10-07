@@ -85,7 +85,7 @@ public class PathPlanner {
                 return Commands.none();
             }
 
-            Pose2d reefPose = gameField.getPoseForReefStand(closestReef.get().stand, closestReef.get().side);
+            Pose2d reefPose = gameField.getPoseForReefStand(closestReef.get().stand, reefStandSide);
             Pose2d preReefPose = gameField.getPreTargetPose(reefPose);
 
             return goToPose(preReefPose);
@@ -131,6 +131,7 @@ public class PathPlanner {
             }
 
             GameField.SelectedReefStand reef = closestReef.get();
+            reef.side = reefStandSide;
             return goToPoseReef(reef.stand, reef.side);
         }, Set.of(swerve));
     }
@@ -168,37 +169,37 @@ public class PathPlanner {
         Optional<GameField.SelectedReefStand> closestReefLeft = gameField.findBestReefStandTo(swerve.getPose(), GameField.ReefStandSide.LEFT,false);
         if (closestReefLeft.isPresent()) {
             GameField.SelectedReefStand stand = closestReefLeft.get();
-            swerve.getField().getObject("ClosestStand").setPose(stand.pose);
-            SmartDashboard.putString("ClosestStand", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name(), stand.side.name()));
+            swerve.getField().getObject("ClosestStandLeft").setPose(stand.pose);
+            SmartDashboard.putString("ClosestStandLeft", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name(), stand.side.name()));
 
             Pose2d reefPose = gameField.getPoseForReefStand(stand.stand, stand.side);
             Pose2d preTargetPose = gameField.getPreTargetPose(reefPose);
-            swerve.getField().getObject("ClosestPreTargetReefPose").setPose(preTargetPose);
-            SmartDashboard.putString("ClosestPreTargetReefPose", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name() + "_PreTarget", stand.side.name() + "_PreTarget"));
+            swerve.getField().getObject("ClosestPreTargetReefPoseLeft").setPose(preTargetPose);
+            SmartDashboard.putString("ClosestPreTargetReefPoseLeft", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name() + "_PreTarget", stand.side.name() + "_PreTarget"));
         } else {
-            swerve.getField().getObject("ClosestStand").setPoses();
-            SmartDashboard.putString("ClosestStand", "");
+            swerve.getField().getObject("ClosestStandLeft").setPoses();
+            SmartDashboard.putString("ClosestStandLeft", "");
 
-            swerve.getField().getObject("ClosestPreTargetReefPose").setPoses();
-            SmartDashboard.putString("ClosestPreTargetReefPose", "");
+            swerve.getField().getObject("ClosestPreTargetReefPoseLeft").setPoses();
+            SmartDashboard.putString("ClosestPreTargetReefPoseLeft", "");
         }
 
-        Optional<GameField.SelectedReefStand> closestReefRight = gameField.findBestReefStandTo(swerve.getPose(), GameField.ReefStandSide.LEFT,false);
+        Optional<GameField.SelectedReefStand> closestReefRight = gameField.findBestReefStandTo(swerve.getPose(), GameField.ReefStandSide.RIGHT,false);
         if (closestReefRight.isPresent()) {
             GameField.SelectedReefStand stand = closestReefRight.get();
-            swerve.getField().getObject("ClosestStand").setPose(stand.pose);
-            SmartDashboard.putString("ClosestStand", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name(), stand.side.name()));
+            swerve.getField().getObject("ClosestStandRight").setPose(stand.pose);
+            SmartDashboard.putString("ClosestStandRight", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name(), stand.side.name()));
 
             Pose2d reefPose = gameField.getPoseForReefStand(stand.stand, stand.side);
             Pose2d preTargetPose = gameField.getPreTargetPose(reefPose);
-            swerve.getField().getObject("ClosestPreTargetReefPose").setPose(preTargetPose);
-            SmartDashboard.putString("ClosestPreTargetReefPose", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name() + "_PreTarget", stand.side.name() + "_PreTarget"));
+            swerve.getField().getObject("ClosestPreTargetReefPoseRight").setPose(preTargetPose);
+            SmartDashboard.putString("ClosestPreTargetReefPoseRight", String.format(Locale.ENGLISH, "%s.%s", stand.stand.name() + "_PreTarget", stand.side.name() + "_PreTarget"));
         } else {
-            swerve.getField().getObject("ClosestStand").setPoses();
-            SmartDashboard.putString("ClosestStand", "");
+            swerve.getField().getObject("ClosestStandRight").setPoses();
+            SmartDashboard.putString("ClosestStandRight", "");
 
-            swerve.getField().getObject("ClosestPreTargetReefPose").setPoses();
-            SmartDashboard.putString("ClosestPreTargetReefPose", "");
+            swerve.getField().getObject("ClosestPreTargetReefPoseRight").setPoses();
+            SmartDashboard.putString("ClosestPreTargetReefPoseRight", "");
         }
 
         SmartDashboard.putBoolean("isInsAutoMovement", isInAutoMovement);

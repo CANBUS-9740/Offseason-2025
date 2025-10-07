@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotMap;
 import frc.robot.subsystems.ShooterSystem;
 
 public class IntakeCommand extends Command {
@@ -24,7 +25,7 @@ public class IntakeCommand extends Command {
 
     @Override
     public void execute() {
-        shooterSystem.motorMove(0.25);
+        shooterSystem.motorMove(RobotMap.SHOOTER_MOTOR_INTAKE_SPEED);
         if (shooterSystem.hasCoral()) {
             timer.start();
         }
