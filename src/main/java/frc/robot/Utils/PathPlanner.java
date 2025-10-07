@@ -63,9 +63,62 @@ public class PathPlanner {
         }, Set.of(swerve));
     }
 
+    public Command goToPoseSlow(Pose2d pose) {
+        return Commands.defer(()-> {
+            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                    swerve.getPose(),
+                    pose
+            );
+
+            PathPlannerPath path = new PathPlannerPath(
+                    waypoints,
+                    RobotMap.PATH_CONSTRAINTS_SLOW,
+                    null,
+                    new GoalEndState(0.0, pose.getRotation()));
+
+            path.preventFlipping = true;
+
+            return new SequentialCommandGroup(
+                    Commands.runOnce(()-> {
+                        isInAutoMovement = true;
+                        swerve.getField().getObject("Target").setPose(pose);
+                    }),
+                    AutoBuilder.followPath(path),
+                    Commands.runOnce(()-> isInAutoMovement = false)
+            );
+        }, Set.of(swerve));
+    }
+
+    public Command goToPoseS(Pose2d pose) {
+        return Commands.defer(()-> {
+            pose.getRotation().plus(Rotation2d.k180deg);
+            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                    swerve.getPose(),
+                    pose
+            );
+
+            PathPlannerPath path = new PathPlannerPath(
+                    waypoints,
+                    RobotMap.PATH_CONSTRAINTS,
+                    null,
+                    new GoalEndState(0.0, pose.getRotation().minus(Rotation2d.k180deg)));
+
+            path.preventFlipping = true;
+
+            return new SequentialCommandGroup(
+                    Commands.runOnce(()-> {
+                        isInAutoMovement = true;
+                        swerve.getField().getObject("Target").setPose(pose);
+                    }),
+                    AutoBuilder.followPath(path),
+                    Commands.runOnce(()-> isInAutoMovement = false)
+            );
+        }, Set.of(swerve));
+    }
+
     public Command goToPoseReef(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
         Pose2d pose = gameField.getPoseForReefStand(reefStand, reefStandSide);
-        return goToPose(pose);
+        return goToPoseSlow(pose);
     }
 
     public Command goToPreTargetReefPose(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
@@ -74,6 +127,15 @@ public class PathPlanner {
             Pose2d preReefPose = gameField.getPreTargetPose(reefPose);
 
             return goToPose(preReefPose);
+        }, Set.of(swerve));
+    }
+
+    public Command goToPreTargetReefPosePathFind(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
+        return Commands.defer(()-> {
+            Pose2d reefPose = gameField.getPoseForReefStand(reefStand, reefStandSide);
+            Pose2d preReefPose = gameField.getPreTargetPose(reefPose);
+
+            return goToPosePathFind(preReefPose);
         }, Set.of(swerve));
     }
 
@@ -94,7 +156,7 @@ public class PathPlanner {
 
     public Command goToPoseSource(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
         Pose2d pose = gameField.getPoseForSource(sourceStand, sourceStandSide);
-        return goToPose(pose);
+        return goToPoseS(pose);
     }
 
     public Command goToReefPathFind(GameField.ReefStand reefStand, GameField.ReefStandSide reefStandSide) {
@@ -104,7 +166,7 @@ public class PathPlanner {
 
     public Command goToSourcePathFind(GameField.SourceStand sourceStand, GameField.SourceStandSide sourceStandSide) {
         Pose2d pose = gameField.getPoseForSource(sourceStand, sourceStandSide);
-        return goToPose(pose);
+        return goToPosePathFind(pose);
     }
 
     public Command goToClosestSource(GameField.SourceStandSide sourceStandSide) {
@@ -131,7 +193,6 @@ public class PathPlanner {
             }
 
             GameField.SelectedReefStand reef = closestReef.get();
-            reef.side = reefStandSide;
             return goToPoseReef(reef.stand, reef.side);
         }, Set.of(swerve));
     }
@@ -152,7 +213,7 @@ public class PathPlanner {
     }
 
     public boolean closestReefIsPresent(GameField.ReefStandSide reefStandSide) {
-        return gameField.findBestReefStandTo(swerve.getPose(), reefStandSide, false).isPresent();
+        return gameField.findBestReefStandTo(swerve.getPose(), reefStandSide, false).isEmpty();
     }
 
     public void update() {

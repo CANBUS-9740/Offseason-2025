@@ -7,6 +7,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -59,6 +60,7 @@ public class ElevatorSystem extends SubsystemBase {
     public void moveToHeight(double targetHeight) {
         SmartDashboard.putNumber("ElevatorSetPointMeters", targetHeight);
         SmartDashboard.putNumber("ElevatorSetPointRots", targetHeight / RobotMap.CIRCUMFERNCE_MM);
+        //double FF = (getHeightMeters() / RobotMap.ELEVATOR_MAX_HEIGHT_M) * RobotMap.ELEVATOR_FF_VOLTAGE;
 
         masterMotor.getClosedLoopController().setReference(targetHeight / RobotMap.CIRCUMFERNCE_MM, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, RobotMap.ELEVATOR_FF_VOLTAGE, SparkClosedLoopController.ArbFFUnits.kVoltage);
     }
@@ -71,6 +73,10 @@ public class ElevatorSystem extends SubsystemBase {
         return !lowerLimit.get();
     }
 
+    public void setEncoderHeight(double height) {
+        encoder.setPosition(height);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ElevatorHeightMeters", getHeightMeters());
@@ -78,10 +84,5 @@ public class ElevatorSystem extends SubsystemBase {
         SmartDashboard.putNumber("ElevatorMasterCurrent", masterMotor.getOutputCurrent());
         SmartDashboard.putNumber("ElevatorFollowerCurrent", followMotor.getOutputCurrent());
         SmartDashboard.putBoolean("ElevatorLowerLimit", getLowerLimit());
-    }
-
-    public void setKp(double kp) {
-        configMaster.closedLoop.p(kp);
-        masterMotor.configure(configMaster, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
     }
 }

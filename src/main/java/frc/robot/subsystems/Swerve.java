@@ -51,8 +51,8 @@ public class Swerve extends SubsystemBase {
 
     public void driveFieldRelative(double translationX, double translationY, double angularRotationX) {
         swerveDrive.drive(new Translation2d(
-                        translationX * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS,
-                        translationY * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS),
+                        translationX,
+                        translationY),
                     angularRotationX * 10,
                 true,
                 false);

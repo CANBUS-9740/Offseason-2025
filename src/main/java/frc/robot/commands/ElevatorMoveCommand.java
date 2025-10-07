@@ -45,6 +45,10 @@ public class ElevatorMoveCommand extends Command {
             }
         }
 
+        if (elevator.getLowerLimit()) {
+            elevator.setEncoderHeight(0);
+        }
+
         SmartDashboard.putBoolean("ElevatorAtTargetHeight", getIsNear());
         SmartDashboard.putNumber("ElevatorTargetHeightMeters", targetHeight);
 

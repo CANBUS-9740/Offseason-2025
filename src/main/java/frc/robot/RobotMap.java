@@ -17,6 +17,7 @@ public class RobotMap {
     public static final DCMotor SWERVE_DRIVE_MOTOR = DCMotor.getKrakenX60(1);
     public static final double SWERVE_DRIVE_MAX_SPEED_MPS = Units.radiansToRotations(SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec) / 6.12 * 0.05;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(2, 2.5, Math.PI, Math.PI);
+    public static final PathConstraints PATH_CONSTRAINTS_SLOW = new PathConstraints(1, 2.5, Math.PI, Math.PI);
     public static final PIDConstants SWERVE_PATH_DRIVE_PID = new PIDConstants(5, 0, 0);
     public static final PIDConstants SWERVE_PATH_ROTATE_PID = new PIDConstants(3, 0, 0);
 
@@ -41,14 +42,13 @@ public class RobotMap {
     public static final double CIRCUMFERNCE_MM = 0.717 / 2.52;
     public static final double GEAR_RATIO_ELEVATOR = 20;
     public static final double ROBOT_HEIGHT_M = 0;
-    public static final double SOURCE_HEIGHT = 1.35;
+    public static final double SOURCE_HEIGHT = 0;
     public static final double ELEVATOR_MIN_HEIGHT_M = 0;
-    public static final double ELEVATOR_MAX_HEIGHT_M = 1.5;
+    public static final double ELEVATOR_MAX_HEIGHT_M = 1.35;
     public static final double ELEVATOR_PARKING_HEIGHT_M = 0;
     public static final double ELEVATOR_L1_HEIGHT_M = 0.036920;
     public static final double ELEVATOR_L2_HEIGHT_M = 0.333636;
     public static final double ELEVATOR_L3_HEIGHT_M = 0.697081;
-    public static final double ELEVATOR_L4_HEIGHT_M = 1.312589
-            ;
-    public static final TrapezoidProfile.Constraints ELEVATOR_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(3.5, 8);
+    public static final double ELEVATOR_L4_HEIGHT_M = 1.312589;
+    public static TrapezoidProfile.Constraints ELEVATOR_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(3.5, 8);
 }

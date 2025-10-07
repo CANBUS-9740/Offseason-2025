@@ -26,7 +26,7 @@ public class DriveStupid extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(swerve.swerveDrive.getModules()[0].getPosition().distanceMeters - lastPos) >= 3;
+        return Math.abs(swerve.swerveDrive.getModules()[0].getPosition().distanceMeters - lastPos) >= 1;
     }
 
     @Override
