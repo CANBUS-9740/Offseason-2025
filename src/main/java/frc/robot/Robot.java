@@ -335,6 +335,32 @@ public class Robot extends TimedRobot {
                 )
         );
 
+        autoChooser.addOption("LeftAutoL3+L2",
+                new SequentialCommandGroup(
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_2, GameField.ReefStandSide.LEFT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.SECOND_STAGE, GameField.ReefStand.STAND_3, GameField.ReefStandSide.RIGHT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.SECOND_STAGE, GameField.ReefStand.STAND_3, GameField.ReefStandSide.LEFT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.LEFT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.RIGHT)
+                ));
+
+        autoChooser.addOption("RightAutoL3+L2",
+                new SequentialCommandGroup(
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_6, GameField.ReefStandSide.LEFT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.SECOND_STAGE, GameField.ReefStand.STAND_5, GameField.ReefStandSide.RIGHT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.SECOND_STAGE, GameField.ReefStand.STAND_5, GameField.ReefStandSide.LEFT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.RIGHT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.LEFT)
+                ));
+
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
     }
