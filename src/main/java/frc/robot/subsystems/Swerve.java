@@ -1,17 +1,16 @@
 package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.RobotMap;
 import org.json.simple.parser.ParseException;
 import swervelib.SwerveDrive;
@@ -20,8 +19,6 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.function.DoubleSupplier;
 
 public class Swerve extends SubsystemBase {
     public final SwerveDrive swerveDrive;
@@ -48,10 +45,14 @@ public class Swerve extends SubsystemBase {
         autoBuilderConfiguration();
     }
 
+    public void addVisionMeasurement(LimelightHelpers.PoseEstimate poseEstimate){
+        swerveDrive.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+    }
+
     public void driveFieldRelative(double translationX, double translationY, double angularRotationX) {
         swerveDrive.drive(new Translation2d(
-                        translationX * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS,
-                        translationY * RobotMap.SWERVE_DRIVE_MAX_SPEED_MPS),
+                        translationX,
+                        translationY),
                     angularRotationX * 10,
                 true,
                 false);
@@ -99,15 +100,15 @@ public class Swerve extends SubsystemBase {
                 this::getRobotRelativeSpeeds,
                 (speeds, feedforwards) -> drive(speeds),
                 new PPHolonomicDriveController(
-                        new PIDConstants(5, 0, 0.5),
-                        new PIDConstants(7, 0.2, 0.5)
+                        RobotMap.SWERVE_PATH_DRIVE_PID,
+                        RobotMap.SWERVE_PATH_ROTATE_PID
                 ),
                 config,
                 () -> {
-                    var alliance = DriverStation.getAlliance();
+                    /*var alliance = DriverStation.getAlliance();
                     if (alliance.isPresent()) {
                         return alliance.get() == DriverStation.Alliance.Red;
-                    }
+                    }*/
                     return false;
                 },
                 this

@@ -26,12 +26,12 @@ public class GameField {
     }
 
     public enum ReefStand {
-        STAND_1(21, 7),
-        STAND_2(20, 8),
-        STAND_3(19, 9),
-        STAND_4(18, 10),
-        STAND_5(17, 11),
-        STAND_6(22, 6);
+        STAND_1(21, 10),
+        STAND_2(20, 11),
+        STAND_3(19, 6),
+        STAND_4(18, 7),
+        STAND_5(17, 8),
+        STAND_6(22, 9);
 
         public final int aprilTagIdBlue;
         public final int aprilTagIdRed;
@@ -43,8 +43,8 @@ public class GameField {
     }
 
     public enum SourceStand {
-        LEFT(13, 2),
-        RIGHT(12, 1);
+        LEFT(13, 1),
+        RIGHT(12, 2);
 
         public final int aprilTagIdBlue;
         public final int aprilTagIdRed;
@@ -57,7 +57,7 @@ public class GameField {
 
     public static class SelectedReefStand {
         public final ReefStand stand;
-        public final ReefStandSide side;
+        public ReefStandSide side;
         public final Pose2d pose;
 
         public SelectedReefStand(ReefStand stand, ReefStandSide side, Pose2d pose) {
@@ -97,10 +97,14 @@ public class GameField {
             .mapToInt((stand)-> stand.aprilTagIdRed)
             .toArray();
 
-    private static final double OFFSET_ON_STAND_REEF = 0.145; //0.328676 / 2; TODO
+    private static final double OFFSET_ON_STAND_REEF_RIGHT = 0.2; //0.1 / 2; TODO
+    private static final double OFFSET_ON_STAND_REEF_LEFT = 0.2;
     private static final double OFFSET_ON_STAND_SOURCE = 0.6575; // TODO
-    private static final double OFFSET_ROBOT = 0.5  ; // (robot length + bumpers) / 2
+    private static final double OFFSET_ROBOT_REEF = 0.47; // (robot length + bumpers)
+    private static final double OFFSET_ROBOT_SOURCE = 0.1;
     private static final double OFFSET_SOURCE_CENTER = 0.2;
+
+    private static final double PRE_TARGET_POSE_REEF_IN_METERS = 0.5; // TODO
 
     private final AprilTagFieldLayout layout;
 
@@ -109,7 +113,7 @@ public class GameField {
         layout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
     }
 
-    public Optional<SelectedReefStand> findBestReefStandTo(Pose2d targetPose, boolean considerAngle) {
+    public Optional<SelectedReefStand> findBestReefStandTo(Pose2d targetPose, ReefStandSide reefStandSide, boolean considerAngle) {
         DriverStation.Alliance alliance = getCurrentAlliance();
         double targetHeading = AngleUtils.translateAngle(targetPose.getRotation().getDegrees());
 
@@ -139,10 +143,10 @@ public class GameField {
             return Optional.empty();
         }
 
-        return Optional.of(new SelectedReefStand(bestStand, bestSide, bestPose));
+        return Optional.of(new SelectedReefStand(bestStand, reefStandSide, bestPose));
     }
 
-    public Optional<SelectedSourceStand> getClosestSourceTo(Pose2d targetPose) {
+    public Optional<SelectedSourceStand> getClosestSourceTo(Pose2d targetPose, SourceStandSide sourceStandSide) {
         DriverStation.Alliance alliance = getCurrentAlliance();
 
         double bestDistance = -1;
@@ -168,7 +172,7 @@ public class GameField {
             return Optional.empty();
         }
 
-        return Optional.of(new SelectedSourceStand(bestStand, bestSide, bestPose));
+        return Optional.of(new SelectedSourceStand(bestStand, sourceStandSide, bestPose));
     }
 
     public Pose2d getPoseForReefStand(ReefStand stand, ReefStandSide side) {
@@ -185,8 +189,8 @@ public class GameField {
 
         Pose2d calculatedPose = calculatePoseInFrontOfAndToTheSide(
                 pose,
-                OFFSET_ON_STAND_REEF,
-                OFFSET_ROBOT,
+                OFFSET_ON_STAND_REEF_RIGHT,
+                OFFSET_ROBOT_REEF,
                 side == ReefStandSide.LEFT);
         double newRotation = (180 + pose.getRotation().getDegrees()) % 360;
         return new Pose2d(calculatedPose.getX(), calculatedPose.getY(), Rotation2d.fromDegrees(newRotation));
@@ -211,18 +215,18 @@ public class GameField {
                 calculatedPose = calculatePoseInFrontOfAndToTheSide(
                         pose,
                         OFFSET_ON_STAND_SOURCE,
-                        OFFSET_ROBOT,
+                        OFFSET_ROBOT_SOURCE,
                         side == SourceStandSide.LEFT);
                 break;
             case CENTER:
-                calculatedPose = calculatePoseInFrontOf(pose, OFFSET_ROBOT);
+                calculatedPose = calculatePoseInFrontOf(pose, OFFSET_ROBOT_SOURCE);
                 break;
             default:
                 throw new AssertionError();
         }
 
         double newRotation = (180 + pose.getRotation().getDegrees()) % 360;
-        return new Pose2d(calculatedPose.getX(), calculatedPose.getY(), Rotation2d.fromDegrees(newRotation));
+        return new Pose2d(calculatedPose.getX(), calculatedPose.getY(), Rotation2d.fromDegrees(newRotation).plus(Rotation2d.fromDegrees(180)));
     }
 
     public Pose2d getPoseToProcessor() {
@@ -237,7 +241,7 @@ public class GameField {
     public Pose2d getPoseToProcessorByAprilTagId(int id) {
         Pose2d pose = getAprilTagPose(id);
 
-        Pose2d calculatedPose = calculatePoseInFrontOf(pose, OFFSET_ROBOT);
+        Pose2d calculatedPose = calculatePoseInFrontOf(pose, OFFSET_ROBOT_REEF);
         return new Pose2d(calculatedPose.getX(), calculatedPose.getY(), calculatedPose.getRotation());
     }
 
@@ -248,7 +252,7 @@ public class GameField {
     private Pose2d getReefStandPoseForAlliance(ReefStand stand, ReefStandSide side, DriverStation.Alliance alliance) {
         int id = alliance == DriverStation.Alliance.Red ? stand.aprilTagIdRed : stand.aprilTagIdBlue;
         Pose2d pose = getAprilTagPose(id);
-        return calculatePoseToTheSide(pose, OFFSET_ON_STAND_REEF, side == ReefStandSide.LEFT);
+        return calculatePoseToTheSide(pose, OFFSET_ON_STAND_REEF_RIGHT, side == ReefStandSide.LEFT);
     }
 
     private Pose2d getSourceStandPoseForAlliance(SourceStand stand, SourceStandSide side, DriverStation.Alliance alliance) {
@@ -261,6 +265,12 @@ public class GameField {
         double alpha = pose.getRotation().getDegrees();
         double beta = isLeft ? alpha - 90 : alpha + 90;
 
+        if (d1 == OFFSET_ON_STAND_REEF_RIGHT) {
+            if (isLeft) {
+                d1 = OFFSET_ON_STAND_REEF_LEFT;
+            }
+        }
+
         Vector2 start = new Vector2(pose.getX(), pose.getY());
         Vector2 down = Vector2.create(d1, Math.toRadians(beta));
         Vector2 up = Vector2.create(d2, Math.toRadians(alpha));
@@ -272,6 +282,12 @@ public class GameField {
     public static Pose2d calculatePoseToTheSide(Pose2d pose, double d1, boolean isLeft) {
         double alpha = pose.getRotation().getDegrees();
         double beta = isLeft ? alpha - 90 : alpha + 90;
+
+        if (d1 == OFFSET_ON_STAND_REEF_RIGHT) {
+            if (isLeft) {
+                d1 = OFFSET_ON_STAND_REEF_LEFT;
+            }
+        }
 
         Vector2 start = new Vector2(pose.getX(), pose.getY());
         Vector2 down = Vector2.create(d1, Math.toRadians(beta));
@@ -300,5 +316,15 @@ public class GameField {
 
     private static double getAngleToDegrees(Pose2d source, Pose2d target) {
         return AngleUtils.translateAngle(Math.toDegrees(Math.atan2(target.getY() - source.getY(), target.getX() - source.getX())));
+    }
+
+    public Pose2d getPreTargetPose(Pose2d reefPose) {
+        double xDistance = Math.cos(reefPose.getRotation().getRadians()) * PRE_TARGET_POSE_REEF_IN_METERS;
+        double yDistance = Math.sin(reefPose.getRotation().getRadians()) * PRE_TARGET_POSE_REEF_IN_METERS;
+
+        double xPose = reefPose.getX() - xDistance;
+        double yPose = reefPose.getY() - yDistance;
+
+        return new Pose2d(xPose, yPose, reefPose.getRotation());
     }
 }

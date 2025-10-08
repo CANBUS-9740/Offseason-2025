@@ -1,35 +1,47 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSystem;
 
 public class ShootCommand extends Command {
-    private final ShooterSystem shooterSystem;
-    private double startdist;
 
-    public ShootCommand(ShooterSystem shooterSystem) {
+    private static final double POST_SEE_DELAY_SEC = 0.3;
+
+    private final ShooterSystem shooterSystem;
+    private final Timer timer;
+    private final double power;
+
+    public ShootCommand(ShooterSystem shooterSystem, double power) {
         this.shooterSystem = shooterSystem;
+        this.power = power;
+        timer = new Timer();
+
         addRequirements(shooterSystem);
 
     }
     @Override
     public void initialize() {
-        startdist = shooterSystem.getDistance();
+        timer.reset();
     }
 
     @Override
     public void execute() {
-        shooterSystem.motorMove(0.5);
+        shooterSystem.motorMove(power);
+        if (!shooterSystem.hasCoral()) {
+            timer.start();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return shooterSystem.getDistance() >= startdist*3;
+        return timer.hasElapsed(POST_SEE_DELAY_SEC);
     }
 
     @Override
     public void end(boolean wasInterrupted) {
         shooterSystem.stop();
+        timer.stop();
     }
 
 }
