@@ -171,11 +171,7 @@ public class Robot extends TimedRobot {
                 groupCommands.coralOnClosestReefStageLeft(CoralReef.THIRD_STAGE)
         );
 
-       operationController.rightBumper(gameLoop).onTrue(
-               pathPlanner.goToSourcePathFind(GameField.SourceStand.RIGHT, GameField.SourceStandSide.LEFT)
-       );
-
-        operationController.leftBumper(gameLoop).onTrue(
+        operationController.rightBumper(gameLoop).onTrue(
                 pathPlanner.goToClosestSource(GameField.SourceStandSide.LEFT)
         );
 
