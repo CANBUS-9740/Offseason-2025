@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class Limelight extends SubsystemBase {
 
-    private static final double MAX_DISTANCE_FOR_POSE = 2;
+    private static final double MAX_DISTANCE_FOR_POSE = 3;
 
     private String name;
 
