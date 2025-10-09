@@ -180,7 +180,7 @@ public class PathPlanner {
 
             GameField.SelectedSourceStand source = closestSource.get();
             System.out.println("fuck this");
-            return goToPoseSource(source.stand, source.side);
+            return goToSourcePathFind(source.stand, source.side);
         }, Set.of(swerve));
     }
 

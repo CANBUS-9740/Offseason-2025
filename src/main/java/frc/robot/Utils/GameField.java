@@ -98,7 +98,7 @@ public class GameField {
             .toArray();
 
     private static final double OFFSET_ON_STAND_REEF_RIGHT = 0.2; //0.1 / 2; TODO
-    private static final double OFFSET_ON_STAND_REEF_LEFT = 0.2;
+    private static final double OFFSET_ON_STAND_REEF_LEFT = 0.15;
     private static final double OFFSET_ON_STAND_SOURCE = 0.6575; // TODO
     private static final double OFFSET_ROBOT_REEF = 0.47; // (robot length + bumpers)
     private static final double OFFSET_ROBOT_SOURCE = 0.1;

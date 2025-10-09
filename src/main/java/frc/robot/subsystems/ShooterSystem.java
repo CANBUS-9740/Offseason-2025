@@ -48,5 +48,6 @@ public class ShooterSystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ShooterSonic", getDistanceMeters());
+        SmartDashboard.putBoolean("HasCoral", hasCoral());
     }
 }

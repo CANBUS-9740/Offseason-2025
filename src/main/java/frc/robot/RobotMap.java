@@ -15,7 +15,7 @@ public class RobotMap {
 
     //Swerve System
     public static final DCMotor SWERVE_DRIVE_MOTOR = DCMotor.getKrakenX60(1);
-    public static final double SWERVE_DRIVE_MAX_SPEED_MPS = Units.radiansToRotations(SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec) / 6.12 * 0.05;
+    public static final double SWERVE_DRIVE_MAX_SPEED_MPS = Units.radiansToRotations(SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec) / 6.12 * 0.085;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(2, 2.5, Math.PI, Math.PI);
     public static final PathConstraints PATH_CONSTRAINTS_SLOW = new PathConstraints(1, 2.5, Math.PI, Math.PI);
     public static final PIDConstants SWERVE_PATH_DRIVE_PID = new PIDConstants(5, 0, 0);
@@ -25,7 +25,7 @@ public class RobotMap {
     public static final int SHOOTER_MOTOR_ID = 46;
     public static final int SHOOTER_IR_PROXIMITY_SENSOR_ID = 1;
     public static final double SHOOTER_MOTOR_GEAR_RATIO = 3;
-    public static final double SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED = 1;
+    public static final double SHOOTER_MOTOR_OUTTAKE_DEFAULT_SPEED = 0.7;
     public static final double SHOOTER_MOTOR_OUTTAKE_LOWER_SPEED = 0.5;
     public static final double SHOOTER_MOTOR_INTAKE_SPEED = 0.35;
     public static final int ULTRASONIC_SENSOR_PING_PORT = 6;
@@ -47,8 +47,8 @@ public class RobotMap {
     public static final double ELEVATOR_MAX_HEIGHT_M = 1.35;
     public static final double ELEVATOR_PARKING_HEIGHT_M = 0;
     public static final double ELEVATOR_L1_HEIGHT_M = 0.036920;
-    public static final double ELEVATOR_L2_HEIGHT_M = 0.333636;
-    public static final double ELEVATOR_L3_HEIGHT_M = 0.697081;
+    public static final double ELEVATOR_L2_HEIGHT_M = 0.363443;
+    public static final double ELEVATOR_L3_HEIGHT_M = 0.726553;
     public static final double ELEVATOR_L4_HEIGHT_M = 1.312589;
     public static TrapezoidProfile.Constraints ELEVATOR_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(3.5, 8);
 }

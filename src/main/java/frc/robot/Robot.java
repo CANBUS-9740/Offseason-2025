@@ -139,40 +139,40 @@ public class Robot extends TimedRobot {
 
         //operator pre target teleop
 
-        operationController.a(gameLoop).onTrue(
+        operationController.b(gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageRight(CoralReef.PODIUM)
         );
 
-        operationController.b(gameLoop).onTrue(
+        operationController.a(gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageRight(CoralReef.FIRST_STAGE)
         );
 
-        operationController.y(gameLoop).onTrue(
+        operationController.x(gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageRight(CoralReef.SECOND_STAGE)
         );
 
-        operationController.x(gameLoop).onTrue(
+        operationController.y(gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageRight(CoralReef.THIRD_STAGE)
         );
 
-        operationController.pov(0, 180, gameLoop).onTrue(
+        operationController.pov(0, 90, gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageLeft(CoralReef.PODIUM)
         );
 
-        operationController.pov(0, 90, gameLoop).onTrue(
+        operationController.pov(0, 180, gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageLeft(CoralReef.FIRST_STAGE)
         );
 
-        operationController.pov(0, 0, gameLoop).onTrue(
+        operationController.pov(0, 270, gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageLeft(CoralReef.SECOND_STAGE)
         );
 
-        operationController.pov(0, 270, gameLoop).onTrue(
+        operationController.pov(0, 0, gameLoop).onTrue(
                 groupCommands.coralOnClosestReefStageLeft(CoralReef.THIRD_STAGE)
         );
 
         operationController.rightBumper(gameLoop).onTrue(
-                pathPlanner.goToClosestSource(GameField.SourceStandSide.LEFT)
+                groupCommands.getCoralFromClosestSource(GameField.SourceStandSide.LEFT)
         );
 
 
@@ -359,6 +359,18 @@ public class Robot extends TimedRobot {
                         groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.RIGHT),
                         groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
                         groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.LEFT)
+                ));
+
+        autoChooser.addOption("LeftAutoL2",
+                new SequentialCommandGroup(
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_2, GameField.ReefStandSide.LEFT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_2, GameField.ReefStandSide.RIGHT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.LEFT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT),
+                        groupCommands.coralOnReefStage(CoralReef.FIRST_STAGE, GameField.ReefStand.STAND_4, GameField.ReefStandSide.RIGHT),
+                        groupCommands.GetCoralFromSource(GameField.SourceStand.LEFT, GameField.SourceStandSide.LEFT)
                 ));
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
